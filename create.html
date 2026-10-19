@@ -1,0 +1,5023 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<base href="/">
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <title>Tạo quà bó hoa kỉ niệm</title>
+    
+    <!-- DevTools protection removed for local development & customization -->
+  
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ===== 1. Design Tokens ===== */
+    :root {
+      --create-bg: #fdf2f8;
+      --create-surface: rgba(255, 255, 255, 0.82);
+      --create-border: rgba(244, 114, 182, 0.35);
+      --create-text: #9b2948;
+      --create-muted: #c47a94;
+      --create-accent: #e8457a;
+      --create-accent-soft: rgba(232, 69, 122, 0.10);
+      --create-radius: 20px;
+      --create-radius-sm: 14px;
+      --create-radius-pill: 999px;
+      --create-shadow: 0 4px 20px rgba(244, 114, 182, 0.12);
+      --create-font: 'Outfit', system-ui, -apple-system, sans-serif;
+      --create-error: #dc2626;
+      --create-success: #16a34a;
+    }
+
+    @font-face {
+      font-family: 'Pacifico';
+      src: url('./assets/fonts/Pacifico-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    /* ===== 2. Reset & Base ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--create-font);
+      background: url('./assets/images/background_create.png') center center / cover no-repeat fixed;
+      background-color: var(--create-bg);
+      min-height: 100vh;
+      padding: 0;
+      line-height: 1.45;
+    }
+
+    /* ===== 3. Page Container ===== */
+    .container {
+      width: 100%;
+      max-width: 100%;
+      min-width: 280px;
+      min-height: 100vh;
+      margin: 0;
+      padding: 12px 12px 24px;
+      background: var(--create-surface);
+      border-radius: var(--create-radius);
+      border: none;
+      box-shadow: none;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    /* ===== 4. Page Header ===== */
+    .page-logo-wrap {
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .page-logo {
+      width: clamp(110px, 15vw, 140px);
+      height: auto;
+      display: inline-block;
+      background: transparent;
+      filter: drop-shadow(0 4px 12px rgba(244, 114, 182, 0.22));
+      transition: transform 0.3s ease;
+    }
+
+    .page-logo:hover {
+      transform: scale(1.04);
+    }
+
+    h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: clamp(1.75rem, 4.5vw, 2.45rem);
+      margin: 0 0 16px;
+      text-align: center;
+      line-height: 1.25;
+      color: var(--create-text);
+      text-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.6),
+        0 2px 8px rgba(155, 41, 72, 0.15),
+        0 4px 16px rgba(155, 41, 72, 0.08);
+      letter-spacing: 0.01em;
+    }
+
+    .title-heart {
+      display: inline-block;
+      font-size: 0.6em;
+      vertical-align: middle;
+    }
+    .title-heart--left { margin-right: 8px; }
+    .title-heart--right { margin-left: 8px; }
+
+    /* ===== 5. Form controls ===== */
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--create-text);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .create-label__hint {
+      font-size: 0.82rem;
+      font-weight: 400;
+      color: var(--create-muted);
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 12px 16px;
+      min-height: 48px;
+      border: 1.5px solid var(--create-border);
+      border-radius: var(--create-radius-sm);
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: #fff;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--create-accent);
+      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+      line-height: 1.55;
+    }
+
+    .letter-content-textarea {
+      min-height: 200px;
+    }
+
+    /* Clearable input styling */
+    .input-clearable-wrapper {
+      position: relative;
+      width: 100%;
+      display: block;
+    }
+
+    .input-clearable-wrapper input[type="text"],
+    .input-clearable-wrapper textarea {
+      padding-right: 40px;
+    }
+
+    .btn-clear-input {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      margin: 0;
+      border: none;
+      border-radius: 50%;
+      background: rgba(155, 41, 72, 0.08);
+      color: var(--create-muted);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 22px;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
+      z-index: 3;
+      user-select: none;
+      opacity: 0.65;
+    }
+
+    .btn-clear-input--textarea {
+      top: 14px;
+      transform: none;
+    }
+
+    .btn-clear-input:hover {
+      background: var(--create-accent);
+      color: #ffffff;
+      opacity: 1;
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .btn-clear-input--textarea:hover {
+      transform: scale(1.1);
+    }
+
+    .btn-clear-input:active {
+      transform: translateY(-50%) scale(0.95);
+    }
+
+    .btn-clear-input--textarea:active {
+      transform: scale(0.95);
+    }
+
+    /* ===== Minh họa câu chúc mở đầu ===== */
+    .intro-demo-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 10px;
+      padding: 10px 14px;
+      background: rgba(253, 242, 248, 0.55);
+      border: 1.5px dashed var(--create-border);
+      border-radius: 14px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .intro-demo-box:hover {
+      background: rgba(253, 242, 248, 0.85);
+      border-color: var(--create-accent);
+    }
+    .intro-demo-thumb {
+      position: relative;
+      width: 78px;
+      height: 140px;
+      flex-shrink: 0;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1.5px solid rgba(244, 114, 182, 0.4);
+      box-shadow: 0 4px 12px rgba(244, 114, 182, 0.18);
+      cursor: pointer;
+      background: #0b1528;
+    }
+    .intro-demo-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+    .intro-demo-thumb:hover img {
+      transform: scale(1.08);
+    }
+    .intro-demo-zoom-hint {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.65);
+      color: #ffffff;
+      font-size: 0.62rem;
+      font-weight: 600;
+      text-align: center;
+      padding: 3px 2px;
+      backdrop-filter: blur(3px);
+      line-height: 1.2;
+    }
+    .intro-demo-desc {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .intro-demo-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      align-self: flex-start;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--create-accent);
+      background: rgba(232, 69, 122, 0.1);
+      padding: 2px 8px;
+      border-radius: 999px;
+      line-height: 1.3;
+    }
+    .intro-demo-desc p {
+      margin: 0;
+      font-size: 0.82rem;
+      color: var(--create-text);
+      line-height: 1.4;
+    }
+    .intro-demo-desc small {
+      font-size: 0.74rem;
+      color: var(--create-muted);
+      font-style: italic;
+    }
+    .intro-demo-modal-card {
+      position: relative;
+      max-width: 290px;
+      width: 86%;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-sizing: border-box;
+      animation: introModalZoom 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes introModalZoom {
+      from { opacity: 0; transform: scale(0.92); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .intro-demo-img-wrap {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      line-height: 0;
+      background: #0b1528;
+    }
+    .intro-demo-modal-img {
+      max-height: 64vh;
+      max-width: 270px;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      display: block;
+    }
+    .intro-demo-modal-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      z-index: 20;
+      line-height: 1;
+      padding: 0;
+    }
+    .intro-demo-modal-close:hover {
+      background: var(--create-accent);
+      border-color: var(--create-accent);
+      transform: scale(1.1);
+    }
+    .intro-demo-modal-caption {
+      color: #ffffff;
+      margin-top: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-align: center;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+      letter-spacing: 0.01em;
+    }
+
+    /* ===== Letter Template Picker ===== */
+    .letter-template-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .btn-template-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      font-family: inherit;
+      color: var(--create-accent);
+      background: rgba(232, 69, 122, 0.08);
+      border: 1.5px solid rgba(232, 69, 122, 0.3);
+      border-radius: var(--create-radius-pill);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      user-select: none;
+      line-height: 1.2;
+    }
+
+    .btn-template-toggle:hover {
+      background: rgba(232, 69, 122, 0.15);
+      border-color: var(--create-accent);
+      transform: translateY(-1px);
+    }
+
+    .btn-template-toggle:active {
+      transform: translateY(0);
+    }
+
+    .btn-template-toggle__arrow {
+      font-size: 0.72rem;
+      transition: transform 0.2s ease;
+      display: inline-block;
+    }
+
+    .btn-template-toggle.open .btn-template-toggle__arrow {
+      transform: rotate(180deg);
+    }
+
+    .letter-template-list,
+    .letter-template-dropdown {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      width: min(360px, calc(100vw - 32px));
+      max-height: 440px;
+      background: #ffffff;
+      border: 1.5px solid var(--create-border);
+      border-radius: var(--create-radius-sm);
+      box-shadow: 0 10px 30px rgba(232, 69, 122, 0.2), 0 2px 8px rgba(0, 0, 0, 0.06);
+      z-index: 99999;
+      animation: dropIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    @keyframes dropIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .letter-template-list__header,
+    .letter-template-dropdown__header {
+      padding: 10px 14px 6px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--create-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: rgba(253, 242, 248, 0.9);
+      flex-shrink: 0;
+    }
+
+    .letter-template-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 4px 8px 8px;
+      background: rgba(253, 242, 248, 0.9);
+      border-bottom: 1px solid var(--create-border);
+      flex-shrink: 0;
+    }
+
+    .template-tab {
+      flex: 1;
+      padding: 6px 2px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      font-family: inherit;
+      color: var(--create-muted);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--create-radius-pill);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .template-tab:hover {
+      color: var(--create-accent);
+      background: rgba(232, 69, 122, 0.08);
+    }
+
+    .template-tab.is-active {
+      color: #ffffff;
+      background: var(--create-accent);
+      box-shadow: 0 2px 6px rgba(232, 69, 122, 0.35);
+    }
+
+    .letter-template-items-wrap {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 360px;
+    }
+
+    .letter-template-item {
+      padding: 11px 14px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(244, 114, 182, 0.12);
+      transition: background 0.15s ease;
+      text-align: left;
+    }
+
+    .letter-template-item:last-child {
+      border-bottom: none;
+    }
+
+    .letter-template-item:hover {
+      background: rgba(232, 69, 122, 0.08);
+    }
+
+    .letter-template-item:active {
+      background: rgba(232, 69, 122, 0.15);
+    }
+
+    .letter-template-item__name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--create-text);
+      margin-bottom: 3px;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .letter-template-item__preview {
+      font-size: 0.78rem;
+      color: var(--create-muted);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      padding: 12px 16px;
+      min-height: 48px;
+      border: 2px dashed var(--create-border);
+      border-radius: var(--create-radius-sm);
+      background: rgba(253, 242, 248, 0.5);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    input[type="file"]:hover {
+      border-color: var(--create-accent);
+      background: rgba(168, 85, 247, 0.03);
+    }
+
+    .preview-image {
+      margin-top: 12px;
+      max-width: 200px;
+      max-height: 200px;
+      border-radius: 12px;
+      border: 1.5px solid var(--create-border);
+      display: none;
+    }
+
+    .preview-image.show {
+      display: block;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      min-height: 48px;
+      border: 1.5px solid var(--create-border);
+      border-radius: var(--create-radius-sm);
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: #fff;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: var(--create-accent);
+      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+    }
+
+    input[type="checkbox"],
+    input[type="radio"] {
+      accent-color: var(--create-accent);
+    }
+
+    .music-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .music-option input[type="radio"] {
+      width: auto;
+      margin: 0;
+    }
+
+    .music-option label {
+      margin: 0;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.92rem;
+    }
+
+    /* ===== Featured Music Cards (2 bài hát mỗi hàng) ===== */
+    .create-music-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+      width: 100%;
+    }
+
+    .create-music-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: rgba(253, 242, 248, 0.4);
+      border: 1.5px solid var(--create-border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 0.8rem;
+      color: var(--create-text);
+      min-width: 0;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    .create-music-item:hover {
+      background: rgba(244, 114, 182, 0.08);
+      border-color: rgba(232, 69, 122, 0.4);
+    }
+
+    .create-music-item--active {
+      border-color: var(--create-accent);
+      background: rgba(232, 69, 122, 0.1);
+      box-shadow: 0 2px 8px rgba(232, 69, 122, 0.12);
+    }
+
+    .create-music-item__play {
+      width: 26px;
+      height: 26px;
+      min-width: 26px;
+      border-radius: 50%;
+      background: var(--create-accent);
+      color: white;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 9px;
+      flex-shrink: 0;
+      transition: transform 0.2s ease, background 0.2s;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .create-music-item__play:hover {
+      transform: scale(1.08);
+      background: #d6366a;
+    }
+
+    /* Info block: tên + progress nằm dọc */
+    .create-music-item__info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .create-music-item__name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Progress bar row: thanh + thời gian */
+    .create-music-item__progress-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .create-music-item__progress-track {
+      flex: 1;
+      height: 3px;
+      background: rgba(232, 69, 122, 0.15);
+      border-radius: 2px;
+      overflow: hidden;
+      min-width: 30px;
+    }
+
+    .create-music-item__progress-fill {
+      height: 100%;
+      background: var(--create-accent);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.3s linear;
+    }
+
+    .create-music-item__time {
+      font-size: 0.68rem;
+      color: #64748b;
+      font-weight: 500;
+      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+
+    .create-select {
+      width: 100%;
+      padding: 12px 40px 12px 16px;
+      min-height: 48px;
+      border: 1.5px solid var(--create-border);
+      border-radius: var(--create-radius-sm);
+      font-size: 0.92rem;
+      font-family: inherit;
+      background: #fff;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23e8457a' d='M1.41 0L6 4.58 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+    }
+
+    .create-select:focus {
+      outline: none;
+      border-color: var(--create-accent);
+      box-shadow: 0 0 0 3px rgba(232, 69, 122, 0.12);
+    }
+
+    /* ===== 6. Buttons ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #f472b6 0%, #a855f7 100%);
+      color: white;
+      padding: 12px 24px;
+      min-height: 48px;
+      border: none;
+      border-radius: var(--create-radius-sm);
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+      width: 100%;
+      margin-top: 20px;
+      white-space: nowrap;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(244, 114, 182, 0.45);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--create-accent);
+      outline-offset: 3px;
+    }
+
+    .payment-notice {
+      margin-top: 16px;
+      margin-bottom: 0;
+      font-size: 0.86rem;
+      line-height: 1.6;
+      background: linear-gradient(135deg, #f472b6 0%, #a855f7 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+
+    .payment-notice .link-order-history {
+      font-weight: 700;
+      text-decoration: underline;
+      cursor: pointer;
+      background: linear-gradient(135deg, #f472b6 0%, #a855f7 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+
+    .payment-notice .link-order-history:hover {
+      opacity: 0.9;
+    }
+
+    /* Contact Section */
+    .contact-section {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px dashed var(--create-border);
+    }
+
+    .contact-section .section-title {
+      margin: 0 0 16px 0;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--create-accent);
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .contact-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .contact-btn {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 0;
+      text-decoration: none;
+      transition: transform 0.15s ease;
+    }
+
+    .contact-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .contact-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      object-fit: contain;
+      padding: 10px;
+      box-sizing: border-box;
+      background: transparent;
+      border: 1.5px solid var(--create-border);
+      transition: border-color 0.2s;
+    }
+
+    .contact-btn:hover .contact-icon {
+      border-color: var(--create-accent);
+    }
+
+    .contact-label {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--create-text);
+    }
+
+    .contact-btn-zalo,
+    .contact-btn-tiktok {
+      background: transparent;
+    }
+
+    .contact-follow-text {
+      margin-top: 14px;
+      margin-bottom: 0;
+      color: var(--create-muted);
+      font-size: 0.84rem;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .preview-section {
+      margin-top: 24px;
+      padding: clamp(16px, 3vw, 24px);
+      background: var(--create-surface);
+      border-radius: var(--create-radius-sm);
+      border: 2px dashed var(--create-border);
+    }
+
+    .preview-section h2 {
+      color: var(--create-accent);
+      margin: 0 0 12px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .preview-data {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.84rem;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .help-text {
+      font-size: 0.82rem;
+      margin-top: 4px;
+      font-weight: 400;
+      color: var(--create-muted);
+    }
+
+    .text-gradient {
+      background: linear-gradient(135deg, #f472b6 0%, #a855f7 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .save-forever-label {
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      min-height: 48px;
+      background: var(--create-surface);
+      border-radius: var(--create-radius-sm);
+      border: 1.5px solid var(--create-border);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-size: 0.92rem;
+    }
+
+    .save-forever-label:hover {
+      border-color: var(--create-accent);
+      box-shadow: 0 0 0 3px var(--create-accent-soft);
+    }
+
+    .save-forever-hint {
+      margin-top: 6px;
+      margin-bottom: 0;
+      font-size: 0.82rem;
+      color: var(--create-muted);
+    }
+
+    /* Letter Templates */
+    .letter-templates {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .template-btn {
+      background: var(--create-surface);
+      border: 1.5px solid var(--create-border);
+      border-radius: var(--create-radius-sm);
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s, transform 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+    }
+
+    .template-btn:hover {
+      border-color: var(--create-accent);
+      background: linear-gradient(135deg, #f472b6 0%, #a855f7 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(244, 114, 182, 0.3);
+    }
+
+    .template-btn:hover .template-icon,
+    .template-btn:hover .template-title {
+      color: white;
+    }
+
+    .template-icon {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .template-title {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--create-text);
+      line-height: 1.3;
+    }
+
+    .btn-toggle-templates {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      min-height: 40px;
+      background: linear-gradient(135deg, #f472b6 0%, #a855f7 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--create-radius-sm);
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .btn-toggle-templates:hover {
+      background: linear-gradient(135deg, #ec4899 0%, #9333ea 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 12px rgba(244, 114, 182, 0.4);
+    }
+
+    .btn-music-help {
+      padding: 8px 16px;
+      min-height: 36px;
+      background: linear-gradient(135deg, #f472b6 0%, #a855f7 100%);
+      color: #fff;
+      border: none;
+      border-radius: var(--create-radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-music-help:hover {
+      background: linear-gradient(135deg, #ec4899 0%, #9333ea 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 10px rgba(244, 114, 182, 0.4);
+    }
+
+    .btn-toggle-templates:active {
+      transform: translateY(0);
+    }
+
+    .btn-toggle-icon {
+      display: inline-block;
+      transition: transform 0.2s;
+      font-size: 10px;
+      color: #ffffff;
+    }
+
+    .btn-toggle-templates[aria-expanded="true"] .btn-toggle-icon {
+      transform: rotate(90deg);
+    }
+
+    .letter-templates-wrapper {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--create-border);
+    }
+
+    @media (max-width: 768px) {
+      .letter-templates {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+
+      .template-btn {
+        padding: 12px 8px;
+      }
+
+      .template-icon {
+        font-size: 24px;
+      }
+
+      .template-title {
+        font-size: 0.8rem;
+        line-height: 1.2;
+      }
+    }
+
+    /* Mobile và Tablet Landscape */
+    @media (max-width: 1024px) and (orientation: landscape) {
+      .letter-templates {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .template-btn {
+        padding: 12px;
+      }
+
+      .template-icon {
+        font-size: 24px;
+      }
+
+      .template-title {
+        font-size: 0.84rem;
+      }
+    }
+
+    .error-message {
+      color: var(--create-error);
+      font-size: 0.82rem;
+      margin-top: 4px;
+      display: none;
+    }
+
+    input.error,
+    textarea.error {
+      border-color: var(--create-error) !important;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+    }
+
+    .two-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    /* ===== 7. Login Section ===== */
+    .login-section {
+      text-align: center;
+      padding: clamp(24px, 4vw, 40px) clamp(16px, 3vw, 24px);
+    }
+
+    .login-section h2 {
+      color: var(--create-text);
+      margin-bottom: 16px;
+      font-size: 1.08rem;
+      font-weight: 700;
+    }
+
+    .login-section p {
+      color: var(--create-muted);
+      margin-bottom: 24px;
+      font-size: 0.92rem;
+    }
+
+    .btn-login {
+      background: linear-gradient(135deg, #f472b6 0%, #a855f7 100%);
+      color: white;
+      padding: 12px 24px;
+      min-height: 48px;
+      border: none;
+      border-radius: var(--create-radius-sm);
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-login:hover {
+      background: linear-gradient(135deg, #ec4899 0%, #9333ea 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(244, 114, 182, 0.45);
+    }
+
+    .btn-login:active {
+      transform: translateY(0);
+    }
+
+    .btn-login:focus-visible {
+      outline: 2px solid var(--create-accent);
+      outline-offset: 3px;
+    }
+
+    /* ===== 8. Auth Bar ===== */
+    .user-info {
+      position: relative;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+      border: 1.5px solid var(--create-border);
+      border-radius: 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--create-shadow);
+    }
+
+    .user-info-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: clamp(12px, 2.5vw, 20px) clamp(14px, 3vw, 24px);
+      border-top-left-radius: 22px;
+      border-top-right-radius: 22px;
+    }
+
+    .user-info-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .user-avatar-wrapper {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+    }
+
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid var(--create-accent-soft);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      object-fit: cover;
+      background: white;
+    }
+
+    .user-avatar-status {
+      position: absolute;
+      bottom: 1px;
+      right: 1px;
+      width: 12px;
+      height: 12px;
+      background: var(--create-success);
+      border: 2px solid white;
+      border-radius: 50%;
+    }
+
+    .user-details { text-align: left; min-width: 0; }
+
+    .user-name {
+      font-weight: 700;
+      color: var(--create-text);
+      font-size: 1.08rem;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-greeting-sub {
+      color: var(--create-muted);
+      font-size: 0.84rem;
+      line-height: 1.3;
+    }
+
+    .user-welcome,
+    .user-email { display: none; }
+
+    .user-info-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .btn-logout {
+      background: #ffffff;
+      color: var(--create-text);
+      padding: 8px 16px;
+      min-height: 36px;
+      border: 1.5px solid var(--create-border);
+      border-radius: var(--create-radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn-logout:hover {
+      border-color: var(--create-accent);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(168, 85, 247, 0.12);
+    }
+
+    .btn-logout:focus-visible {
+      outline: 2px solid var(--create-accent);
+      outline-offset: 3px;
+    }
+
+    /* ===== 9. Order history row ===== */
+    .order-history-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px clamp(14px, 3vw, 24px);
+      border-top: 1px dashed var(--create-border);
+      cursor: pointer;
+      transition: background 0.2s;
+      border-bottom-left-radius: 22px;
+      border-bottom-right-radius: 22px;
+    }
+
+    .order-history-row:hover {
+      background: var(--create-accent-soft);
+    }
+
+    .order-history-row__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #fce7f3 0%, #f3e8ff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .order-history-row__icon svg {
+      width: 18px;
+      height: 18px;
+      color: var(--create-accent);
+    }
+
+    .order-history-row__text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .order-history-row__title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--create-accent);
+      line-height: 1.3;
+    }
+
+    .order-history-row__sub {
+      font-size: 0.74rem;
+      color: var(--create-muted);
+      line-height: 1.3;
+    }
+
+    .order-history-row__arrow {
+      flex-shrink: 0;
+      color: var(--create-muted);
+      font-size: 20px;
+      font-weight: 700;
+      transition: color 0.2s, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .order-history-row:hover .order-history-row__arrow {
+      color: var(--create-accent);
+      transform: translateX(4px);
+    }
+
+    .form-container {
+      display: none;
+      position: relative;
+      z-index: 1;
+    }
+
+    .form-container.show {
+      display: block;
+    }
+
+    /* ===== Section cards ===== */
+    .create-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .create-section {
+      background: #ffffff;
+      border: 1.5px solid var(--create-border);
+      border-radius: var(--create-radius);
+      padding: clamp(14px, 2.5vw, 20px);
+      box-shadow: var(--create-shadow);
+      transition: border-color 0.25s, box-shadow 0.25s;
+      overflow: visible;
+    }
+
+    .create-section:hover {
+      border-color: rgba(232, 69, 122, 0.45);
+      box-shadow: 0 6px 28px rgba(244, 114, 182, 0.15);
+    }
+
+    .create-section__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+      border-bottom: 1px dashed var(--create-border);
+      position: relative;
+      overflow: visible;
+    }
+
+    .create-section__header .create-section__title {
+      margin: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .create-section__title {
+      margin: 0 0 16px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--create-accent);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed var(--create-border);
+      position: relative;
+      overflow: visible;
+    }
+
+    .create-section__title-icon {
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .create-section .form-group {
+      margin-bottom: 14px;
+    }
+    .create-section .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ===== 10. Modal ===== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 24px;
+      padding: 0;
+      max-width: 400px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      transform: scale(0.9);
+      opacity: 0;
+      transition: transform 0.25s ease-out, opacity 0.25s ease-out;
+    }
+
+    .modal-overlay.show .modal {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-icon {
+      width: 24px;
+      height: 24px;
+      color: var(--create-error);
+    }
+
+    .modal-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--create-text);
+      margin: 0;
+    }
+
+    .modal-body {
+      padding: 24px;
+      color: var(--create-text);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    /* Music Help modal */
+    .modal-content {
+      background: white;
+      border-radius: 24px;
+      padding: 0;
+      max-width: 520px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    #musicHelpModal .modal-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    #musicHelpModal .modal-header h3 {
+      margin: 0;
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--create-accent);
+    }
+
+    #musicHelpModal .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--create-muted);
+      padding: 4px;
+      line-height: 1;
+      border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    #musicHelpModal .modal-close:hover {
+      color: var(--create-accent);
+      background: var(--create-accent-soft);
+    }
+
+    #musicHelpModal .modal-body {
+      padding: 24px;
+      line-height: 1.55;
+      font-size: 0.92rem;
+    }
+
+    #musicHelpModal .help-intro {
+      margin-bottom: 16px;
+    }
+
+    #musicHelpModal .help-intro p {
+      margin: 0;
+      color: var(--create-text);
+    }
+
+    #musicHelpModal .help-item {
+      margin-bottom: 16px;
+      padding: 14px 16px;
+      background: rgba(253, 242, 248, 0.6);
+      border-radius: 14px;
+      border: 1px solid var(--create-border);
+    }
+
+    #musicHelpModal .help-item h4 {
+      margin: 0 0 8px 0;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--create-accent);
+    }
+
+    #musicHelpModal .help-item p {
+      margin: 0 0 6px 0;
+      font-size: 0.88rem;
+      color: var(--create-text);
+    }
+
+    #musicHelpModal .help-item p:last-child {
+      margin-bottom: 0;
+    }
+
+    #musicHelpModal .help-item a {
+      color: var(--create-accent);
+      text-decoration: none;
+    }
+
+    #musicHelpModal .help-item a:hover {
+      text-decoration: underline;
+    }
+
+    #musicHelpModal .help-note {
+      margin-top: 16px;
+      padding: 14px 16px;
+      background: rgba(250, 245, 255, 0.7);
+      border-radius: 14px;
+      border: 1px solid rgba(233, 213, 255, 0.6);
+    }
+
+    #musicHelpModal .help-note p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--create-text);
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .btn-modal {
+      padding: 10px 24px;
+      min-height: 40px;
+      border: none;
+      border-radius: var(--create-radius-sm);
+      font-size: 0.88rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .btn-modal-cancel {
+      background: #f8f9fa;
+      color: var(--create-text);
+      border: 1.5px solid var(--create-border);
+    }
+
+    .btn-modal-cancel:hover {
+      background: #f1f1f1;
+      border-color: #adb5bd;
+    }
+
+    .btn-modal-confirm {
+      background: linear-gradient(135deg, #f472b6 0%, #a855f7 100%);
+      color: white;
+    }
+
+    .btn-modal-confirm:hover {
+      background: linear-gradient(135deg, #ec4899 0%, #9333ea 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 12px rgba(244, 114, 182, 0.4);
+    }
+
+    .btn-modal:active {
+      transform: translateY(0);
+    }
+
+    .btn-modal:focus-visible {
+      outline: 2px solid var(--create-accent);
+      outline-offset: 3px;
+    }
+
+    /* ===== 11. Responsive ===== */
+    @media (max-width: 540px) {
+      h1 { font-size: clamp(1.48rem, 6.2vw, 2.3rem); }
+
+      .user-avatar-wrapper,
+      .user-avatar { width: 40px; height: 40px; }
+
+      .user-name { font-size: 0.92rem; }
+
+      .btn-logout .btn-logout-text { display: none; }
+      .btn-logout { padding: 8px 10px; min-height: 36px; }
+
+      .btn { min-height: 44px; font-size: 0.88rem; }
+    }
+
+    @media (max-width: 768px) {
+      .two-columns {
+        grid-template-columns: 1fr;
+      }
+
+      .container {
+        padding: clamp(16px, 3vw, 20px);
+      }
+    }
+
+    /* ===== 12. Reduced Motion ===== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+    
+    /* Order History Modal */
+    .order-history-modal {
+      max-width: 900px;
+      width: 90%;
+      max-height: 80vh;
+    }
+    
+    .order-history-content {
+      max-height: 60vh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      padding: 20px 24px;
+    }
+    
+    .order-item {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+    }
+    
+    .order-item:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .order-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #dee2e6;
+    }
+    
+    .order-code {
+      font-weight: 600;
+      font-size: 17px;
+      color: #495057;
+    }
+    
+    .order-status {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .order-status.paid {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .order-status.pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .order-status.failed {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .order-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .order-detail-item {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .order-detail-label {
+      font-size: 14px;
+      color: #6c757d;
+      margin-bottom: 4px;
+    }
+    
+    .order-detail-value {
+      font-size: 15px;
+      color: #212529;
+      font-weight: 500;
+    }
+    
+    .order-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    
+    .order-action-btn {
+      flex: 1;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .order-action-view {
+      background: linear-gradient(135deg, #f472b6 0%, #a855f7 100%);
+      color: white;
+    }
+
+    .order-action-view:hover {
+      background: linear-gradient(135deg, #ec4899 0%, #9333ea 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 10px rgba(244, 114, 182, 0.4);
+    }
+    
+    .order-action-copy {
+      background: #667eea;
+      color: white;
+    }
+    
+    .order-action-copy:hover {
+      background: #5568d3;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    }
+    
+    .order-action-qr {
+      background: #28a745;
+      color: white;
+    }
+    
+    .order-action-qr:hover {
+      background: #218838;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(40, 167, 69, 0.4);
+    }
+
+    .order-action-pay {
+      background: linear-gradient(135deg, #f472b6 0%, #a855f7 100%);
+      color: white;
+    }
+
+    .order-action-pay:hover:not(:disabled) {
+      background: linear-gradient(135deg, #ec4899 0%, #9333ea 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 10px rgba(244, 114, 182, 0.4);
+    }
+
+    .order-action-pay:disabled {
+      background: #dee2e6;
+      color: #6c757d;
+      cursor: not-allowed;
+    }
+    
+    .order-item {
+      transition: all 0.3s ease;
+    }
+    
+    .order-item:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    .order-history-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6c757d;
+    }
+    
+    .order-history-empty svg {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    
+    .order-history-loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: #667eea;
+    }
+    
+    .order-pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #dee2e6;
+    }
+    
+    .pagination-btn {
+      padding: 8px 16px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .pagination-btn:hover:not(:disabled) {
+      background: #5568d3;
+    }
+    
+    .pagination-btn:disabled {
+      background: #dee2e6;
+      color: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    
+    .pagination-info {
+      font-size: 14px;
+      color: #495057;
+      font-weight: 500;
+    }
+    
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .modal-close {
+      margin-left: auto;
+    }
+
+    /* Order History - Responsive Mobile Layout */
+    @media (max-width: 768px) {
+      /* Thu nhỏ item bài hát trên mobile (vẫn hiển thị đủ tên và thời lượng, 2 bài 1 hàng) */
+      .create-music-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        margin-top: 6px;
+        width: 100%;
+      }
+      .create-music-item {
+        padding: 5px 6px;
+        gap: 5px;
+        border-radius: 10px;
+        font-size: 0.75rem;
+      }
+      .create-music-item__play {
+        width: 22px;
+        height: 22px;
+        min-width: 22px;
+        font-size: 8px;
+      }
+      .create-music-item__info {
+        gap: 1px;
+      }
+      .create-music-item__name {
+        font-size: 0.72rem;
+        line-height: 1.2;
+      }
+      .create-music-item__progress-row {
+        gap: 3px;
+      }
+      .create-music-item__progress-track {
+        height: 2px;
+        min-width: 20px;
+      }
+      .create-music-item__time {
+        font-size: 0.62rem;
+      }
+      .voucher-bar {
+        padding: 11px 14px;
+        border-radius: 14px;
+      }
+      .voucher-bar-title {
+        font-size: 0.96rem;
+      }
+
+      .order-history-modal {
+        width: 95%;
+        max-width: 520px;
+        max-height: 85vh;
+        border-radius: 14px;
+        margin: auto;
+      }
+
+      .order-history-modal .modal-header {
+        padding: 12px 16px;
+      }
+
+      .order-history-modal .modal-title {
+        font-size: 1rem;
+      }
+
+      .order-history-content {
+        max-height: 70vh;
+        padding: 10px 10px;
+      }
+
+      .order-item {
+        padding: 9px 10px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+
+      .order-item:hover {
+        transform: none;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      }
+
+      .order-item-header {
+        margin-bottom: 7px;
+        padding-bottom: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .order-code {
+        font-size: 13px;
+        min-width: 0;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .order-code span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .order-code button {
+        font-size: 10px !important;
+        padding: 1px 5px !important;
+      }
+
+      .order-status {
+        padding: 2px 7px;
+        font-size: 10.5px;
+        border-radius: 6px;
+        letter-spacing: 0.2px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      /* Dàn hàng ngang 3 cột chi tiết đơn thật gọn như desktop */
+      .order-details {
+        display: grid;
+        grid-template-columns: 1.15fr 0.9fr 0.95fr;
+        gap: 4px 6px;
+        margin-bottom: 7px;
+        align-items: flex-start;
+      }
+
+      .order-detail-item {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .order-detail-label {
+        font-size: 10px;
+        color: #718096;
+        margin-bottom: 1px;
+        white-space: nowrap;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+      }
+
+      .order-detail-value {
+        font-size: 12px;
+        color: #2d3748;
+        font-weight: 600;
+        line-height: 1.25;
+        word-break: break-word;
+      }
+
+      /* Dàn hàng ngang các nút thao tác thật gọn */
+      .order-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 7px;
+      }
+
+      .order-action-btn {
+        flex: 1;
+        padding: 6px 4px;
+        min-height: 32px;
+        font-size: 11.5px;
+        font-weight: 600;
+        border-radius: 6px;
+        gap: 4px;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .order-action-btn svg {
+        width: 13px;
+        height: 13px;
+        flex-shrink: 0;
+      }
+
+      .order-pagination {
+        gap: 8px;
+        margin-top: 12px;
+        padding-top: 10px;
+      }
+
+      .pagination-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+        min-height: 32px;
+      }
+
+      .pagination-info {
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .order-item {
+        padding: 8px 8px;
+      }
+
+      .order-details {
+        gap: 3px 4px;
+      }
+
+      .order-detail-label {
+        font-size: 9.5px;
+      }
+
+      .order-detail-value {
+        font-size: 11px;
+      }
+
+      .order-actions {
+        gap: 4px;
+      }
+
+      .order-action-btn {
+        padding: 5px 2px;
+        font-size: 10.5px;
+        gap: 3px;
+        min-height: 30px;
+      }
+
+      .order-action-btn svg {
+        width: 12px;
+        height: 12px;
+      }
+
+      .order-code {
+        font-size: 12px;
+      }
+
+      .order-status {
+        font-size: 10px;
+        padding: 2px 5px;
+      }
+    }
+    
+    /* Price Summary & Payment Methods (Minimalist & Compact) */
+    .price-summary {
+      background: #fafafc;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin: 12px 0 10px 0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+    
+    .price-summary-header {
+      display: none;
+    }
+    
+    .price-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .price-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2px 0;
+      font-size: 0.84rem;
+      line-height: 1.3;
+    }
+    
+    .price-item .price-label {
+      font-weight: 500;
+      color: #64748b;
+    }
+    
+    .price-item .price-value {
+      font-weight: 600;
+      color: #334155;
+    }
+    
+    #voucherPriceItem .price-label {
+      color: #059669 !important;
+      font-weight: 600 !important;
+    }
+    #voucherPriceItem .price-value {
+      color: #059669 !important;
+      font-weight: 700 !important;
+    }
+    
+    .price-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0 2px 0;
+      margin-top: 6px;
+      border-top: 1px solid #e2e8f0;
+    }
+    
+    .price-total .price-label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #1e293b;
+    }
+    
+    .price-total .price-value {
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: var(--create-accent);
+    }
+
+    /* ===== Payment Method Radio (Compact 2-Column Grid) ===== */
+    .payment-methods-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .payment-method-label {
+      display: flex;
+      align-items: center;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: #ffffff;
+      min-width: 0;
+    }
+    .payment-method-label:hover {
+      border-color: #cbd5e1;
+    }
+    .payment-method-label:has(input:checked) {
+      border-color: #a855f7;
+      background: #faf5ff;
+      box-shadow: 0 1px 3px rgba(168, 85, 247, 0.12);
+    }
+    .payment-method-label input[type="radio"] {
+      display: none;
+    }
+    .payment-method-content {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      width: 100%;
+      min-width: 0;
+    }
+    .payment-method-icon {
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+    .payment-method-content > span:last-child {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .payment-method-content strong {
+      font-size: 0.78rem;
+      color: #4b1d8e;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+    .payment-method-content small {
+      font-size: 0.68rem;
+      color: #94a3b8;
+      font-weight: normal;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+
+    /* ===== Google Translate: ẩn widget gốc, giữ logic ===== */
+    #google_translate_element { position: absolute; left: -9999px; opacity: 0; pointer-events: none; height: 0; overflow: hidden; }
+    .VIpgJd-ZVi9od-ORHb-OEVmcd { display: none; }
+    .goog-te-banner-frame.skiptranslate { display: none !important; }
+    body { top: 0 !important; }
+
+    /* ----- Language switcher dropdown UI ----- */
+    :root {
+      --text-dark: #1f2937;
+      --text-light: #6b7280;
+    }
+
+    .nav-language-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      z-index: 60;
+    }
+
+    .nav-language-wrap.active {
+      z-index: 100;
+    }
+
+    .nav-lang-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 6px 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #fff;
+      font: inherit;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .nav-lang-trigger:hover {
+      border-color: #f0abfc;
+      box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.1);
+    }
+
+    .nav-lang-trigger::after { display: none; }
+
+    .nav-lang-icon {
+      flex-shrink: 0;
+      opacity: 0.85;
+    }
+
+    .nav-lang-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text-dark);
+    }
+
+    .language-dropdown {
+      position: absolute;
+      top: calc(100% + 0.55rem);
+      right: 0;
+      min-width: 220px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding: 0.45rem;
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 14px;
+      box-shadow:
+        0 20px 45px rgba(30, 58, 138, 0.18),
+        0 8px 24px rgba(244, 114, 182, 0.15);
+      border: 1px solid rgba(244, 114, 182, 0.22);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(8px) scale(0.96);
+      transform-origin: top right;
+      transition:
+        opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0.28s;
+      z-index: 9999;
+    }
+
+    .nav-language-wrap.active .language-dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+
+    .language-dropdown-title {
+      margin: 0;
+      padding: 0.55rem 0.6rem 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-light);
+    }
+
+    .language-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .language-option {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      width: 100%;
+      padding: 0.55rem 0.6rem;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .language-option:hover {
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .language-option.is-active {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.14), rgba(244, 114, 182, 0.1));
+    }
+
+    .language-option.is-active .language-name {
+      color: #0c4a6e;
+      font-weight: 700;
+    }
+
+    .language-flag {
+      font-size: 1.25rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .language-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+      min-width: 0;
+    }
+
+    .language-name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      line-height: 1.25;
+    }
+
+    .language-sub {
+      font-size: 0.72rem;
+      color: var(--text-light);
+      line-height: 1.2;
+    }
+    /* Loading spinner cho nút thanh toán */
+    .btn-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2.5px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: btn-spin 0.7s linear infinite;
+      vertical-align: middle;
+    }
+    @keyframes btn-spin {
+      to { transform: rotate(360deg); }
+    }
+    .btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* ===== Voucher Bar Trigger (Phong cách Button Bar tinh tế theo mẫu) ===== */
+    .voucher-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      padding: 13px 18px;
+      background: rgba(253, 242, 248, 0.7);
+      border: 1.5px solid rgba(244, 114, 182, 0.45);
+      border-radius: 18px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      box-sizing: border-box;
+    }
+    .voucher-bar:hover {
+      background: #fff0f5;
+      border-color: rgba(232, 69, 122, 0.65);
+      box-shadow: 0 4px 14px rgba(244, 114, 182, 0.15);
+      transform: translateY(-1px);
+    }
+    .voucher-bar:active {
+      transform: translateY(0);
+    }
+    .voucher-bar:has(.voucher-bar-checkbox:checked),
+    .voucher-bar.is-open {
+      background: #fff0f5;
+      border-color: var(--create-accent);
+      box-shadow: 0 2px 10px rgba(232, 69, 122, 0.15);
+    }
+    .voucher-bar.has-voucher {
+      border-color: #10b981;
+      background: #f0fdf4;
+    }
+    .voucher-bar.has-voucher .voucher-bar-icon,
+    .voucher-bar.has-voucher .voucher-bar-title,
+    .voucher-bar.has-voucher .voucher-bar-arrow {
+      color: #065f46;
+    }
+    .voucher-bar-checkbox {
+      display: none;
+    }
+    .voucher-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex: 1;
+    }
+    .voucher-bar-icon {
+      color: #9b2948;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
+    .voucher-bar:hover .voucher-bar-icon {
+      transform: scale(1.05);
+    }
+    .voucher-bar-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #9b2948;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+    .voucher-bar-arrow {
+      color: #9b2948;
+      flex-shrink: 0;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .voucher-bar:has(.voucher-bar-checkbox:checked) .voucher-bar-arrow,
+    .voucher-bar.is-open .voucher-bar-arrow {
+      transform: rotate(90deg);
+    }
+    .voucher-container {
+      display: none;
+      margin-top: 10px;
+      background: #fafafc;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 14px;
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      transition: all 0.2s ease;
+    }
+    .voucher-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 12px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 9px;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+    .voucher-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+    }
+    .voucher-card.is-applied {
+      background: #f0fdf4;
+      border-color: #86efac;
+      box-shadow: 0 1px 4px rgba(16, 185, 129, 0.08);
+    }
+    .voucher-card__main {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+    .voucher-card__tags {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .voucher-card__discount {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #e8457a;
+      background: rgba(232, 69, 122, 0.1);
+      padding: 2px 7px;
+      border-radius: 5px;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+    .voucher-card.is-applied .voucher-card__discount {
+      color: #059669;
+      background: rgba(5, 150, 105, 0.12);
+    }
+    .voucher-card__code {
+      font-size: 0.8rem;
+      font-weight: 700;
+      font-family: monospace;
+      color: #334155;
+      letter-spacing: 0.04em;
+    }
+    .voucher-card__meta-line {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      line-height: 1.2;
+    }
+    .voucher-card__actions {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .btn-voucher-action {
+      height: 30px;
+      padding: 0 12px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+      font-family: var(--create-font);
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-voucher-apply {
+      background: rgba(232, 69, 122, 0.1);
+      color: #e8457a;
+      border: 1px solid rgba(232, 69, 122, 0.2);
+    }
+    .btn-voucher-apply:hover {
+      background: #e8457a;
+      color: #ffffff;
+      border-color: #e8457a;
+    }
+    .btn-voucher-remove {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    .btn-voucher-remove:hover {
+      background: #fee2e2;
+    }
+    .voucher-msg-success {
+      background: #f0fdf4;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+    .voucher-msg-error {
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+    .voucher-msg-info {
+      background: #f8fafc;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+    .voucher-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+      width: 100%;
+    }
+    .voucher-input-row input {
+      flex: 1;
+      min-width: 0;
+      width: 100%;
+      height: 38px;
+      min-height: 38px;
+      padding: 0 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      outline: none;
+      background: #fff;
+      color: var(--create-text);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      box-sizing: border-box;
+      margin: 0;
+    }
+    .voucher-input-row input:focus {
+      border-color: #f472b6;
+      box-shadow: 0 0 0 2px rgba(244, 114, 182, 0.15);
+    }
+    .btn-apply-voucher {
+      flex: 0 0 88px;
+      width: 88px;
+      height: 38px;
+      min-height: 38px;
+      padding: 0 12px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #f472b6 0%, #e8457a 100%);
+      color: #ffffff !important;
+      font-weight: 600;
+      font-size: 0.82rem;
+      font-family: var(--create-font);
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      transition: opacity 0.15s, transform 0.1s;
+      margin: 0 !important;
+      box-sizing: border-box;
+    }
+    .btn-apply-voucher:hover {
+      opacity: 0.92;
+    }
+    .btn-apply-voucher:active {
+      transform: scale(0.98);
+    }
+
+    /* ===== 🌸 TÙY CHỌN TÔNG MÀU BÓ HOA (FLOWER COLOR PICKER) ===== */
+    .flower-color-group {
+      margin-bottom: 20px;
+    }
+    .flower-color-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .flower-color-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--create-text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+    }
+    .flower-color-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: rgba(232, 69, 122, 0.12);
+      color: #e8457a;
+      border: 1px solid rgba(232, 69, 122, 0.25);
+    }
+    .flower-color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 8px;
+      margin-top: 6px;
+      margin-bottom: 8px;
+    }
+    .color-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 6px 5px 7px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1.5px solid rgba(244, 114, 182, 0.35);
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: center;
+      font-family: var(--create-font);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+      min-width: 0;
+    }
+    .color-card:hover {
+      border-color: #ec4899;
+      background: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(236, 72, 153, 0.18);
+    }
+    .color-card.is-active {
+      border-color: #e8457a;
+      background: #fff5f8;
+      box-shadow: 0 0 0 2px rgba(232, 69, 122, 0.25), 0 4px 14px rgba(232, 69, 122, 0.18);
+    }
+    .color-card-thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 228 / 270;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #0b1528;
+      margin-bottom: 5px;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+    .color-card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      display: block;
+      transition: transform 0.25s ease;
+    }
+    .color-card:hover .color-card-thumb img {
+      transform: scale(1.05);
+    }
+    .color-card-check {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      background: #e8457a;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      opacity: 0;
+      transform: scale(0.6);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .color-card.is-active .color-card-check {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .color-card-thumb {
+      cursor: zoom-in;
+    }
+    .color-card-zoom-hint {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.3) 70%, transparent 100%);
+      color: #ffffff;
+      font-size: 0.58rem;
+      font-weight: 600;
+      text-align: center;
+      padding: 6px 2px 3px;
+      backdrop-filter: blur(2px);
+      line-height: 1.2;
+      opacity: 0.85;
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+    .color-card:hover .color-card-zoom-hint {
+      opacity: 1;
+      background: linear-gradient(to top, rgba(232, 69, 122, 0.9) 0%, rgba(0, 0, 0, 0.4) 80%, transparent 100%);
+    }
+
+    /* Modal phóng to ảnh mẫu hoa */
+    .flower-demo-modal-card {
+      position: relative;
+      max-width: 350px;
+      width: 90%;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-sizing: border-box;
+      animation: introModalZoom 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .flower-demo-img-wrap {
+      position: relative;
+      width: 100%;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      background: #0b1528;
+      display: flex;
+      flex-direction: column;
+    }
+    .flower-demo-media-wrap {
+      position: relative;
+      width: 100%;
+      background: #071020;
+      line-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .flower-demo-modal-img {
+      width: 100%;
+      max-height: 56vh;
+      object-fit: contain;
+      background: #071020;
+      display: block;
+      transition: opacity 0.18s ease;
+    }
+    .flower-demo-modal-counter {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(255, 255, 255, 0.28);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      z-index: 25;
+      line-height: 1.2;
+    }
+    .flower-demo-modal-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.62);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(255, 255, 255, 0.4);
+      color: #ffffff;
+      font-size: 22px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 25;
+      line-height: 1;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+    }
+    .flower-demo-modal-nav:hover {
+      background: var(--create-accent);
+      border-color: var(--create-accent);
+      transform: translateY(-50%) scale(1.12);
+      box-shadow: 0 6px 18px rgba(232, 69, 122, 0.55);
+    }
+    .flower-demo-modal-nav:active {
+      transform: translateY(-50%) scale(0.92);
+    }
+    .flower-demo-modal-nav--prev {
+      left: 10px;
+      padding-right: 2px;
+    }
+    .flower-demo-modal-nav--next {
+      right: 10px;
+      padding-left: 2px;
+    }
+    .flower-demo-modal-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      z-index: 25;
+      line-height: 1;
+      padding: 0;
+    }
+    .flower-demo-modal-close:hover {
+      background: var(--create-accent);
+      border-color: var(--create-accent);
+      transform: scale(1.1);
+    }
+    .flower-demo-modal-info {
+      padding: 12px 14px 14px;
+      background: linear-gradient(180deg, #111e38 0%, #0d172c 100%);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .flower-demo-modal-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #f472b6;
+      letter-spacing: 0.02em;
+    }
+    .flower-demo-modal-title {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+    .flower-demo-modal-desc {
+      margin: 0;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.82);
+      line-height: 1.45;
+    }
+    .flower-demo-modal-btn {
+      margin-top: 5px;
+      width: 100%;
+      padding: 9px 14px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, #f472b6 0%, #e8457a 100%);
+      color: #ffffff;
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(232, 69, 122, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .flower-demo-modal-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(232, 69, 122, 0.5);
+    }
+    .color-card-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      min-width: 0;
+    }
+    .color-card-name {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--create-text);
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .color-card-desc {
+      font-size: 0.65rem;
+      color: var(--create-muted);
+      line-height: 1.15;
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .color-card.is-active .color-card-name {
+      color: #e8457a;
+    }
+
+    /* Mobile: Giữ đúng 1 hàng duy nhất, siêu gọn gàng, tiết kiệm tối đa diện tích */
+    @media (max-width: 580px) {
+      .flower-color-grid {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        gap: 6px;
+        margin-top: 6px;
+        margin-bottom: 8px;
+        padding: 2px 2px 6px;
+        scrollbar-width: none;
+      }
+      .flower-color-grid::-webkit-scrollbar {
+        display: none;
+      }
+      .color-card {
+        flex: 0 0 68px;
+        min-width: 68px;
+        max-width: 76px;
+        padding: 4px 3px 5px;
+        border-radius: 9px;
+        scroll-snap-align: start;
+      }
+      .color-card-thumb {
+        border-radius: 6px;
+        margin-bottom: 3px;
+      }
+      .color-card-check {
+        width: 14px;
+        height: 14px;
+        font-size: 8px;
+        top: 3px;
+        right: 3px;
+      }
+      .color-card-name {
+        font-size: 0.64rem;
+        line-height: 1.15;
+      }
+      .color-card-desc {
+        display: none;
+      }
+    }
+
+    /* Các mẫu Swatch gradient */
+    .color-swatch--classic {
+      background: radial-gradient(circle at 35% 30%, #ffe0f0 0%, #ff8fcf 45%, #c2185b 100%);
+    }
+    .color-swatch--pastel {
+      background: radial-gradient(circle at 35% 30%, #ffffff 0%, #f9a8d4 50%, #db2777 100%);
+    }
+    .color-swatch--peach {
+      background: radial-gradient(circle at 35% 30%, #fff7ed 0%, #fda4af 45%, #e11d48 100%);
+    }
+    .color-swatch--magenta {
+      background: radial-gradient(circle at 35% 30%, #fdf2f8 0%, #e879f9 50%, #86198f 100%);
+    }
+    .color-swatch--vintage {
+      background: radial-gradient(circle at 35% 30%, #ffe4e6 0%, #f43f5e 50%, #4c0519 100%);
+    }
+
+    .mockup-pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ec4899;
+      box-shadow: 0 0 8px #ec4899;
+      animation: pulseDot 1.8s infinite;
+    }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    /* ==========================================================================
+       PHONE MOCKUP PREVIEW PATTERN — STYLESHEET (docs/PHONE_MOCKUP_PREVIEW_PATTERN.md)
+       ========================================================================== */
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    /* 1. Backdrop & Hộp thoại Modal bao ngoài */
+    #previewModal.preview-theme-modal.modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      width: 100vw;
+      max-width: 100vw;
+      height: 100vh;
+      max-height: 100vh;
+      border-radius: 0;
+      transform: none;
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      padding: max(6px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
+      box-sizing: border-box;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    #previewModal.preview-theme-modal.modal.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    #previewModal .modal-content-preview {
+      position: relative;
+      box-sizing: border-box;
+      width: min(520px, calc(100vw - 12px));
+      max-width: min(520px, calc(100vw - 12px));
+      max-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 12px);
+      max-height: calc(100svh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 12px);
+      height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 12px);
+      height: calc(100svh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 12px);
+      padding: 6px 8px 6px;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Nút X đóng modal */
+    #previewModal .close-modal {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      line-height: 1;
+      background: rgba(241, 245, 249, 0.9);
+      border: 1px solid rgba(203, 213, 225, 0.7);
+      border-radius: 50%;
+      color: #64748b;
+      cursor: pointer;
+      z-index: 30;
+      transition: all 0.15s ease;
+      padding: 0;
+    }
+    #previewModal .close-modal:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    /* 2. Vùng Wrap & Hai hộp Scale */
+    .preview-modal-phone-wrap {
+      flex: 1 1 0;
+      min-height: 0;
+      overflow: visible;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 2px;
+    }
+
+    .preview-phone-scale-clip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+      flex-shrink: 0;
+    }
+
+    .preview-phone-scale-inner {
+      box-sizing: border-box;
+      transform-origin: center center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: 8px 12px 14px;
+      will-change: transform;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* 3. Khung điện thoại CSS iPhone */
+    .preview-theme-modal .theme-detail-phone {
+      width: 380px;
+      max-width: none;
+      margin: 0;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+
+    .theme-detail-phone {
+      --phone-outer-r: 54px;
+      --phone-frame: 5px;
+      --phone-bezel: 2px;
+      --phone-inner-r: calc(var(--phone-outer-r) - var(--phone-frame) - var(--phone-bezel));
+      position: relative;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      aspect-ratio: 9 / 19.5;
+      padding: var(--phone-frame);
+      border-radius: var(--phone-outer-r);
+      overflow: visible;
+      background: linear-gradient(152deg, #fafafc 0%, #e8e8ed 18%, #b8b8c0 42%, #9a9aa3 50%, #bcbcc4 58%, #ececf0 82%, #f6f6f9 100%);
+      box-shadow:
+        0 0 0 1.5px #d1d5db,
+        0 0 0 3px #9ca3af,
+        0 20px 50px -10px rgba(0, 0, 0, 0.38),
+        0 1px 0 rgba(255, 255, 255, 0.75) inset;
+    }
+
+    .theme-detail-phone::before {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      border-radius: calc(var(--phone-outer-r) - 1px);
+      pointer-events: none;
+      z-index: 0;
+      background: linear-gradient(
+        128deg,
+        rgba(255, 255, 255, 0.55) 0%,
+        rgba(255, 255, 255, 0.1) 34%,
+        transparent 55%,
+        rgba(255, 255, 255, 0.06) 100%
+      );
+    }
+
+    .theme-detail-phone-bezel {
+      position: relative;
+      z-index: 1;
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      padding: var(--phone-bezel);
+      border-radius: calc(var(--phone-outer-r) - var(--phone-frame));
+      background: linear-gradient(180deg, #1a1a1c 0%, #050505 50%, #121214 100%);
+      box-sizing: border-box;
+      box-shadow:
+        0 0 0 0.5px rgba(0, 0, 0, 0.95) inset,
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+    }
+
+    /* 4. Nút bấm vật lý cạnh máy */
+    .theme-detail-phone-side {
+      position: absolute;
+      z-index: 5;
+      border-radius: 2px;
+      pointer-events: none;
+      background: linear-gradient(90deg, #d8d8de 0%, #a1a1a9 45%, #d0d0d8 100%);
+      box-shadow:
+        0 0 0 0.5px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    .theme-detail-phone-side--silent {
+      left: -1px;
+      top: 19%;
+      width: 2px;
+      height: 14px;
+      border-radius: 2px 0 0 2px;
+    }
+
+    .theme-detail-phone-side--vol-up {
+      left: -1px;
+      top: 27%;
+      width: 2px;
+      height: 28px;
+      border-radius: 2px 0 0 2px;
+    }
+
+    .theme-detail-phone-side--vol-down {
+      left: -1px;
+      top: 36%;
+      width: 2px;
+      height: 28px;
+      border-radius: 2px 0 0 2px;
+    }
+
+    .theme-detail-phone-side--power {
+      right: -1px;
+      top: 30%;
+      width: 2px;
+      height: 56px;
+      border-radius: 0 2px 2px 0;
+      background: linear-gradient(270deg, #d8d8de 0%, #a1a1a9 45%, #d0d0d8 100%);
+    }
+
+    /* 5. Màn hình & Iframe (Fix WebKit clip) */
+    .theme-detail-phone-screen {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      border-radius: var(--phone-inner-r);
+      overflow: hidden;
+      background: #ffffff;
+      isolation: isolate;
+      transform: translateZ(0);
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      -webkit-mask-image: -webkit-radial-gradient(white, black);
+      mask-image: radial-gradient(white, black);
+    }
+
+    .theme-detail-iframe {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      border: none;
+      outline: none;
+      background: transparent;
+      object-fit: cover;
+      transform: scale(1.01);
+      transform-origin: center center;
+    }
+
+    .theme-detail-iframe[hidden] {
+      display: none !important;
+    }
+
+    /* 6. Dynamic Island */
+    .theme-detail-phone-island {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      z-index: 12;
+      width: 95px;
+      height: 26px;
+      transform: translateX(-50%);
+      border-radius: 20px;
+      background: #000000;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      pointer-events: none;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+
+    .theme-detail-phone-island::after {
+      content: '';
+      position: absolute;
+      right: 18%;
+      top: 50%;
+      width: 10px;
+      height: 10px;
+      transform: translateY(-50%);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #1e293b 0%, #020617 70%);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+      opacity: 0.85;
+    }
+
+    .theme-detail-phone-screen.island-hidden .theme-detail-phone-island {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    /* 7. Thanh Safari Bar nổi giả lập iOS */
+    .theme-detail-safari-bar {
+      position: absolute;
+      bottom: 22px;
+      left: 16px;
+      right: 16px;
+      height: 44px;
+      z-index: 12;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px 0 14px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.48);
+      box-shadow: 0 0 10px 1px rgba(255, 255, 255, 0.4), inset 0 0 6px rgba(255, 255, 255, 0.18), 0 2px 6px rgba(0, 0, 0, 0.05);
+      box-sizing: border-box;
+      transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
+      user-select: none;
+    }
+
+    .safari-bar-spacer {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .safari-bar-url-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      height: 30px;
+      background: transparent;
+      border: none;
+      padding: 0 6px;
+      border-radius: 9999px;
+      transition: opacity 0.15s ease;
+    }
+
+    .safari-bar-url-wrap:hover {
+      opacity: 0.75;
+    }
+
+    .safari-lock-icon {
+      width: 10px;
+      height: 11px;
+      flex-shrink: 0;
+      color: #6b7280;
+      opacity: 0.9;
+    }
+
+    .safari-bar-domain {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: #4b5563;
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .safari-bar-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      border-radius: 50%;
+      color: #6b7280;
+      cursor: pointer;
+      transition: opacity 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .safari-bar-btn:hover {
+      opacity: 0.7;
+    }
+
+    .safari-reload-icon {
+      width: 13px;
+      height: 13px;
+      transition: transform 0.2s ease;
+    }
+
+    .safari-bar-btn--reload.is-spinning .safari-reload-icon {
+      animation: safariReloadSpin 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes safariReloadSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* 8. Home Indicator */
+    .theme-detail-phone-home-indicator {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      z-index: 13;
+      width: 132px;
+      max-width: 36%;
+      height: 5px;
+      transform: translateX(-50%);
+      border-radius: 9999px;
+      background: rgba(0, 0, 0, 0.8);
+      pointer-events: none;
+      transition: background 0.2s ease;
+    }
+
+    /* 9. Fallback */
+    .theme-detail-preview-fallback {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      padding: 1rem 0.85rem;
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      text-align: center;
+    }
+
+    .theme-detail-preview-fallback[hidden] {
+      display: none !important;
+    }
+
+    .theme-detail-fallback-img {
+      max-width: 92%;
+      max-height: 52%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .theme-detail-preview-fallback-text {
+      font-size: 0.82rem;
+      line-height: 1.55;
+      color: #64748b;
+      margin: 0;
+      max-width: 17rem;
+    }
+
+    /* 10. Footer Modal Controls */
+    .preview-modal-hint {
+      display: none !important;
+    }
+
+    .preview-modal-footer {
+      flex-shrink: 0;
+      margin-top: 4px;
+      padding-bottom: 2px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .preview-modal-toggle-island {
+      min-width: 0;
+      padding: 4px 12px;
+      font-size: 0.74rem;
+      font-weight: 500;
+      color: #64748b;
+      background: #f8fafc;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .preview-modal-toggle-island:hover {
+      color: #0f172a;
+      border-color: rgba(100, 116, 139, 0.65);
+      background: #e2e8f0;
+    }
+
+    .preview-modal-toggle-island[aria-pressed="true"] {
+      color: #2563eb;
+      border-color: rgba(37, 99, 235, 0.45);
+      background: rgba(37, 99, 235, 0.08);
+    }
+
+    .preview-modal-footer .btn {
+      min-width: 0;
+      padding: 4px 12px;
+      font-size: 0.74rem;
+      font-weight: 500;
+      border-radius: 9999px;
+      cursor: pointer;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      border: 1px solid #cbd5e1;
+      background: #f1f5f9;
+      color: #334155;
+      transition: all 0.15s ease;
+    }
+
+    .preview-modal-footer .btn:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .preview-modal-footer .btn[hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 768px) {
+      #previewModal.preview-theme-modal {
+        padding: max(4px, env(safe-area-inset-top)) max(4px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left));
+      }
+      #previewModal .modal-content-preview {
+        width: calc(100vw - 8px);
+        max-width: calc(100vw - 8px);
+        height: calc(100svh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 8px);
+        max-height: calc(100svh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 8px);
+        padding: 4px 4px 4px;
+        border-radius: 14px;
+      }
+      #previewModal .preview-modal-phone-wrap {
+        padding: 0;
+      }
+      .preview-modal-footer {
+        margin-top: 2px;
+        padding-bottom: 2px;
+        gap: 6px;
+      }
+      .preview-modal-footer .btn,
+      .preview-modal-toggle-island {
+        padding: 3px 8px;
+        font-size: 0.7rem;
+        height: 26px;
+      }
+    }
+  </style>
+<!-- Open Graph -->
+<!-- Twitter -->
+<!-- Favicon -->
+<!-- Chặn DevTools -->
+<!-- Firebase SDK -->
+<!-- Socket.IO Client -->
+<!-- Google Fonts: Outfit -->
+<title> Tạo món quà bó hoa đặc biệt</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description"
+    content="Tạo quà tặng kỹ thuật số đặc biệt cho ngày lễ. Thiết kế thiệp chúc mừng, thư tay, thêm ảnh và nhạc nền cho thầy cô yêu quý.">
+<meta name="keywords"
+    content="tạo quà bó hoa, thiết kế thiệp chúc mừng, thư tay, quà tặng thầy cô, tạo thiệp online">
+<meta name="author" content="Gift83">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#667eea">
+<meta name="description"
+    content="Tạo món quà bó hoa đặc biệt của riêng bạn. Thiết kế sách tình yêu, chọn nhạc, ảnh và gửi đến người thương ❤️">
+<meta name="keywords" content="women's day, quà women's day, tạo quà, món quà tình yêu, thiệp Women's Day">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bouquet.giftory.pro/create.html">
+<meta property="og:title" content=" Tạo món quà bó hoa đặc biệt">
+<meta property="og:description"
+    content="Tạo món quà bó hoa đặc biệt của riêng bạn. Thiết kế sách tình yêu, chọn nhạc, ảnh và gửi đến người thương ❤️">
+<meta property="og:image" content="https://bouquet.giftory.pro/assets/images/logo_ready_small.png">
+<meta property="og:locale" content="vi_VN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content=" Tạo món quà bó hoa đặc biệt">
+<meta name="twitter:description"
+    content="Tạo món quà đặc biệt của riêng bạn. Thiết kế sách tình yêu, chọn nhạc, ảnh và gửi đến người thương ❤️">
+<meta name="twitter:image" content="https://bouquet.giftory.pro/assets/images/logo_ready_small.png">
+<link rel="icon" type="image/png" href="./assets/images/logo_ready_small.png">
+<link rel="apple-touch-icon" href="./assets/images/logo_ready_small.png">
+</head>
+<body>
+<noscript><div style="padding:15px;text-align:center">Vui lòng bật JavaScript để dùng trang này.</div></noscript>
+
+  <div class="container">
+    <!-- Google Translate element (hidden, logic only) -->
+    <div id="google_translate_element" aria-label="Google Translate"></div>
+
+    <!-- Logo + Title -->
+    <div class="page-logo-wrap">
+      <img src="./assets/images/logo_ready.png" alt="Logo" class="page-logo">
+    </div>
+    <h1><span class="title-heart title-heart--left">💕</span>Bó hoa kỉ niệm<span class="title-heart title-heart--right">💕</span></h1>
+
+    <!-- Login Section -->
+    <div id="loginSection" class="login-section">
+      <h2>🔐 Đăng nhập để tiếp tục</h2>
+      <p>Vui lòng đăng nhập bằng Google để tạo phiên bản custom</p>
+      <button class="btn-login" id="btnLogin">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4" />
+          <path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853" />
+          <path d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.951H.957C.348 6.174 0 7.55 0 9s.348 2.826.957 4.049l2.007-1.342z" fill="#FBBC05" />
+          <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.951L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335" />
+        </svg>
+        Đăng nhập với Google
+      </button>
+    </div>
+
+    <!-- User Info Section (account + order history) -->
+    <div id="userInfoSection" class="user-info" style="display: none;">
+      <!-- Top row: avatar + name | lang + logout -->
+      <div class="user-info-top">
+        <div class="user-info-left">
+          <div class="user-avatar-wrapper">
+            <img id="userAvatar" class="user-avatar" src="" alt="Avatar">
+            <div class="user-avatar-status"></div>
+          </div>
+          <div class="user-details">
+            <div class="user-name" id="userName"></div>
+            <div class="user-greeting-sub">Chào mừng bạn trở lại!</div>
+            <!-- Hidden but kept for JS compatibility -->
+            <div class="user-welcome" style="display:none">Xin chào,</div>
+            <div class="user-email" id="userEmail" style="display:none">
+              <svg class="user-email-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <span id="userEmailText"></span>
+            </div>
+          </div>
+        </div>
+        <div class="user-info-right">
+          <!-- Language dropdown -->
+          <span class="nav-language-wrap" id="langWrap">
+            <button type="button" class="nav-lang-trigger" id="navLinkLanguage"
+                title="Chọn ngôn ngữ" aria-expanded="false" aria-haspopup="listbox">
+              <svg class="nav-lang-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                  fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" />
+                <path stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                    d="M3 12h18M12 3c2.5 2.8 3.8 6.2 3.8 9s-1.3 6.2-3.8 9M12 3c-2.5 2.8-3.8 6.2-3.8 9s1.3 6.2 3.8 9" />
+              </svg>
+              <span class="nav-lang-label" id="navLangLabel">VI</span>
+            </button>
+            <div class="language-dropdown" id="languageDropdown" role="listbox" aria-label="Chọn ngôn ngữ">
+              <p class="language-dropdown-title">Ngôn ngữ</p>
+              <div class="language-list">
+                <button type="button" class="language-option is-active" data-lang="vi" aria-selected="true">
+                  <span class="language-flag" aria-hidden="true">🇻🇳</span>
+                  <span class="language-info">
+                    <span class="language-name">Tiếng Việt</span>
+                    <span class="language-sub">Vietnamese</span>
+                  </span>
+                </button>
+                <button type="button" class="language-option" data-lang="en" aria-selected="false">
+                  <span class="language-flag" aria-hidden="true">🇺🇸</span>
+                  <span class="language-info">
+                    <span class="language-name">English</span>
+                    <span class="language-sub">Tiếng Anh</span>
+                  </span>
+                </button>
+                <button type="button" class="language-option" data-lang="id" aria-selected="false">
+                  <span class="language-flag" aria-hidden="true">🇮🇩</span>
+                  <span class="language-info">
+                    <span class="language-name">Bahasa Indonesia</span>
+                    <span class="language-sub">Tiếng Indonesia</span>
+                  </span>
+                </button>
+                <button type="button" class="language-option" data-lang="ja" aria-selected="false">
+                  <span class="language-flag" aria-hidden="true">🇯🇵</span>
+                  <span class="language-info">
+                    <span class="language-name">日本語</span>
+                    <span class="language-sub">Tiếng Nhật</span>
+                  </span>
+                </button>
+                <button type="button" class="language-option" data-lang="ko" aria-selected="false">
+                  <span class="language-flag" aria-hidden="true">🇰🇷</span>
+                  <span class="language-info">
+                    <span class="language-name">한국어</span>
+                    <span class="language-sub">Tiếng Hàn</span>
+                  </span>
+                </button>
+                <button type="button" class="language-option" data-lang="zh-CN" aria-selected="false">
+                  <span class="language-flag" aria-hidden="true">🇨🇳</span>
+                  <span class="language-info">
+                    <span class="language-name">中文</span>
+                    <span class="language-sub">Tiếng Trung</span>
+                  </span>
+                </button>
+                <button type="button" class="language-option" data-lang="th" aria-selected="false">
+                  <span class="language-flag" aria-hidden="true">🇹🇭</span>
+                  <span class="language-info">
+                    <span class="language-name">ภาษาไทย</span>
+                    <span class="language-sub">Tiếng Thái</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </span>
+          <!-- Logout button -->
+          <button class="btn-logout" id="btnLogout">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span class="btn-logout-text">Đăng xuất</span>
+          </button>
+        </div>
+      </div>
+      <!-- Order history row (inside same section) -->
+      <div class="order-history-row" id="btnOrderHistory">
+        <div class="order-history-row__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+            <path d="M8 7h8M8 12h5M8 17h3"></path>
+          </svg>
+        </div>
+        <div class="order-history-row__text">
+          <div class="order-history-row__title">Lịch sử đơn hàng</div>
+          <div class="order-history-row__sub">Xem lại những món quà bạn đã tạo</div>
+        </div>
+        <span class="order-history-row__arrow">›</span>
+      </div>
+    </div>
+    
+    <!-- Form Container -->
+    <div id="formContainer" class="form-container">
+    <form id="customForm" class="create-form">
+
+      <!-- ====== Section 1: Intro - Phần mở đầu ====== -->
+      <section class="create-section" aria-labelledby="sec-intro">
+        <h2 id="sec-intro" class="create-section__title">
+          <span class="create-section__title-icon">✨</span>
+          Intro - Phần mở đầu
+        </h2>
+
+        <!-- Câu mở đầu (Intro) -->
+        <div class="form-group">
+          <label for="introText">Câu chúc mở đầu</label>
+          <div class="input-clearable-wrapper">
+            <input type="text" id="introText" name="introText" value="Happy Women's Day" placeholder="Ví dụ: Happy Women's Day">
+            <button type="button" class="btn-clear-input" aria-label="Xóa nội dung" title="Xóa">✕</button>
+          </div>
+          <div class="help-text">Hiển thị ở màn hình mở đầu khi người nhận mở quà</div>
+
+          <!-- Minh họa vị trí câu chúc mở đầu -->
+          <div class="intro-demo-box">
+            <div class="intro-demo-thumb" onclick="openIntroDemoModal()" title="Bấm để xem ảnh phóng to">
+              <img src="./assets/images/cauchuc_demo.png" alt="Minh họa câu chúc mở đầu" loading="lazy">
+              <span class="intro-demo-zoom-hint">🔍 Xem ảnh lớn</span>
+            </div>
+            <div class="intro-demo-desc">
+              <span class="intro-demo-tag">✨ Minh họa vị trí</span>
+              <p>Câu chúc sẽ xuất hiện dạng các vì sao lấp lánh trên nền trời đêm</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tông màu bó hoa (Flower Color Picker) -->
+        <div class="form-group flower-color-group">
+          <div class="flower-color-header">
+            <label class="flower-color-label" for="flowerColor">
+              <span>🌸 Tông màu bó hoa</span>
+            </label>
+            <span class="flower-color-badge" id="flowerColorBadge">Hồng Tulip (Cổ điển)</span>
+          </div>
+          <div class="flower-color-grid" id="flowerColorGrid" role="radiogroup" aria-label="Chọn tông màu bó hoa">
+            <button type="button" class="color-card is-active" data-color="classic" role="radio" aria-checked="true">
+              <div class="color-card-thumb">
+                <img src="./assets/images/demo_flower_classic.png" alt="Hồng Tulip" loading="lazy">
+                <span class="color-card-check">✓</span>
+                <span class="color-card-zoom-hint">🔍 Xem lớn</span>
+              </div>
+              <div class="color-card-text">
+                <strong class="color-card-name">Hồng Tulip</strong>
+                <small class="color-card-desc">Cổ điển • Chuẩn</small>
+              </div>
+            </button>
+            <button type="button" class="color-card" data-color="mix" role="radio" aria-checked="false">
+              <div class="color-card-thumb">
+                <img src="./assets/images/demo_flower_mix.png" alt="Mix Candy" loading="lazy">
+                <span class="color-card-check">✓</span>
+                <span class="color-card-zoom-hint">🔍 Xem lớn</span>
+              </div>
+              <div class="color-card-text">
+                <strong class="color-card-name">Mix Candy</strong>
+                <small class="color-card-desc">Đa sắc • Kẹo ngọt</small>
+              </div>
+            </button>
+            <button type="button" class="color-card" data-color="pink_mix" role="radio" aria-checked="false">
+              <div class="color-card-thumb">
+                <img src="./assets/images/demo_flower_pink_mix.png" alt="Mix Hồng" loading="lazy">
+                <span class="color-card-check">✓</span>
+                <span class="color-card-zoom-hint">🔍 Xem lớn</span>
+              </div>
+              <div class="color-card-text">
+                <strong class="color-card-name">Mix Hồng</strong>
+                <small class="color-card-desc">Đa sắc hồng • Dịu ngọt</small>
+              </div>
+            </button>
+            <button type="button" class="color-card" data-color="pink_tulip_mix" role="radio" aria-checked="false">
+              <div class="color-card-thumb">
+                <img src="./assets/images/demo_flower_pink_tulip_mix.png" alt="Mix Hồng Tulip" loading="lazy">
+                <span class="color-card-check">✓</span>
+                <span class="color-card-zoom-hint">🔍 Xem lớn</span>
+              </div>
+              <div class="color-card-text">
+                <strong class="color-card-name">Mix Hồng Tulip</strong>
+                <small class="color-card-desc">Tulip chủ đạo • Đỏ • Đào</small>
+              </div>
+            </button>
+            <button type="button" class="color-card" data-color="raspberry_pink" role="radio" aria-checked="false">
+              <div class="color-card-thumb">
+                <img src="./assets/images/demo_flower_raspberry_pink.png" alt="Hồng Mâm Xôi & Phấn" loading="lazy">
+                <span class="color-card-check">✓</span>
+                <span class="color-card-zoom-hint">🔍 Xem lớn</span>
+              </div>
+              <div class="color-card-text">
+                <strong class="color-card-name">Mâm Xôi & Phấn</strong>
+                <small class="color-card-desc">Mẫu 2 • 2 màu xen kẽ</small>
+              </div>
+            </button>
+            <button type="button" class="color-card" data-color="coral_champagne" role="radio" aria-checked="false">
+              <div class="color-card-thumb">
+                <img src="./assets/images/demo_flower_coral_champagne.png" alt="Hồng San Hô & Champagne" loading="lazy">
+                <span class="color-card-check">✓</span>
+                <span class="color-card-zoom-hint">🔍 Xem lớn</span>
+              </div>
+              <div class="color-card-text">
+                <strong class="color-card-name">San Hô & Champagne</strong>
+                <small class="color-card-desc">Mẫu 3 • 2 màu xen kẽ</small>
+              </div>
+            </button>
+            <button type="button" class="color-card" data-color="pastel" role="radio" aria-checked="false">
+              <div class="color-card-thumb">
+                <img src="./assets/images/demo_flower_pastel.png" alt="Hồng Phấn" loading="lazy">
+                <span class="color-card-check">✓</span>
+                <span class="color-card-zoom-hint">🔍 Xem lớn</span>
+              </div>
+              <div class="color-card-text">
+                <strong class="color-card-name">Hồng Phấn</strong>
+                <small class="color-card-desc">Nhạt • Dịu ngọt</small>
+              </div>
+            </button>
+            <button type="button" class="color-card" data-color="peach" role="radio" aria-checked="false">
+              <div class="color-card-thumb">
+                <img src="./assets/images/demo_flower_peach.png" alt="Hồng Đào" loading="lazy">
+                <span class="color-card-check">✓</span>
+                <span class="color-card-zoom-hint">🔍 Xem lớn</span>
+              </div>
+              <div class="color-card-text">
+                <strong class="color-card-name">Hồng Đào</strong>
+                <small class="color-card-desc">Ánh cam • Tươi tắn</small>
+              </div>
+            </button>
+            <button type="button" class="color-card" data-color="purple" role="radio" aria-checked="false">
+              <div class="color-card-thumb">
+                <img src="./assets/images/demo_flower_purple.png" alt="Tím Mộng Mơ" loading="lazy">
+                <span class="color-card-check">✓</span>
+                <span class="color-card-zoom-hint">🔍 Xem lớn</span>
+              </div>
+              <div class="color-card-text">
+                <strong class="color-card-name">Tím Mộng Mơ</strong>
+                <small class="color-card-desc">Lavender • Quý phái</small>
+              </div>
+            </button>
+            <button type="button" class="color-card" data-color="blue" role="radio" aria-checked="false">
+              <div class="color-card-thumb">
+                <img src="./assets/images/demo_flower_blue.png" alt="Xanh Lam Đêm" loading="lazy">
+                <span class="color-card-check">✓</span>
+                <span class="color-card-zoom-hint">🔍 Xem lớn</span>
+              </div>
+              <div class="color-card-text">
+                <strong class="color-card-name">Xanh Lam Đêm</strong>
+                <small class="color-card-desc">Midnight • Trầm huyền ảo</small>
+              </div>
+            </button>
+            <button type="button" class="color-card" data-color="white" role="radio" aria-checked="false">
+              <div class="color-card-thumb">
+                <img src="./assets/images/demo_flower_white.png" alt="Trắng Tinh Khôi" loading="lazy">
+                <span class="color-card-check">✓</span>
+                <span class="color-card-zoom-hint">🔍 Xem lớn</span>
+              </div>
+              <div class="color-card-text">
+                <strong class="color-card-name">Trắng Tinh Khôi</strong>
+                <small class="color-card-desc">Pure White • Thuần khiết</small>
+              </div>
+            </button>
+            <button type="button" class="color-card" data-color="magenta" role="radio" aria-checked="false">
+              <div class="color-card-thumb">
+                <img src="./assets/images/demo_flower_magenta.png" alt="Hồng Sen Đậm" loading="lazy">
+                <span class="color-card-check">✓</span>
+                <span class="color-card-zoom-hint">🔍 Xem lớn</span>
+              </div>
+              <div class="color-card-text">
+                <strong class="color-card-name">Hồng Sen Đậm</strong>
+                <small class="color-card-desc">Fuchsia • Rực rỡ</small>
+              </div>
+            </button>
+            <button type="button" class="color-card" data-color="vintage" role="radio" aria-checked="false">
+              <div class="color-card-thumb">
+                <img src="./assets/images/demo_flower_vintage.png" alt="Đỏ Hồng Nhung" loading="lazy">
+                <span class="color-card-check">✓</span>
+                <span class="color-card-zoom-hint">🔍 Xem lớn</span>
+              </div>
+              <div class="color-card-text">
+                <strong class="color-card-name">Đỏ Hồng Nhung</strong>
+                <small class="color-card-desc">Ruby • Sâu lắng</small>
+              </div>
+            </button>
+          </div>
+          <input type="hidden" id="flowerColor" name="flowerColor" value="classic">
+        </div>
+      </section>
+
+      <!-- ====== Section 2: Thư và nhạc nền ====== -->
+      <section class="create-section" aria-labelledby="sec-letter">
+        <div class="create-section__header">
+          <h2 id="sec-letter" class="create-section__title">
+            <span class="create-section__title-icon">💌</span>
+            Thư và nhạc nền
+          </h2>
+          <div class="letter-template-wrap" id="letterTemplateWrap">
+            <button type="button" id="letterTemplateBtn" class="btn-template-toggle" aria-expanded="false" aria-haspopup="true">
+              <span class="btn-template-toggle__icon">✉️</span>
+              <span>Mẫu thư</span>
+              <span class="btn-template-toggle__arrow">▾</span>
+            </button>
+            <div id="letterTemplateList" class="letter-template-dropdown" style="display:none;">
+              <div class="letter-template-dropdown__header">Chọn mẫu thư (click để áp dụng)</div>
+              <div class="letter-template-tabs" id="letterTemplateTabs">
+                <button type="button" class="template-tab is-active" data-cat="chung">💞 Dịp chung</button>
+                <button type="button" class="template-tab" data-cat="8thang3">🌷 8/3</button>
+                <button type="button" class="template-tab" data-cat="20thang10">💐 20/10</button>
+                <button type="button" class="template-tab" data-cat="20thang11">🎓 20/11</button>
+              </div>
+              <div class="letter-template-items-wrap" id="letterTemplateItemsWrap">
+                <!-- Danh sách mẫu thư sẽ được JS render theo tab đang chọn -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Letter Templates (tạm ẩn UI) -->
+        <div class="form-group" style="display: none;" aria-hidden="true">
+          <button type="button" id="toggleLetterTemplates" class="btn-toggle-templates" aria-expanded="false">
+            <span class="btn-toggle-icon">▶</span>
+            <span class="btn-toggle-text">Xem mẫu thư có sẵn</span>
+          </button>
+          <div id="letterTemplatesContent" class="letter-templates-wrapper" style="display: none;" aria-hidden="true">
+            <!-- Mẫu cho mẹ -->
+            <div style="margin-bottom: 20px;">
+              <div style="font-size: 17px; font-weight: 600; color: #667eea; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <span>👩</span>
+                <span>Mẫu cho mẹ</span>
+              </div>
+              <div class="letter-templates">
+                <button type="button" class="template-btn" data-template="me_1">
+                  <span class="template-icon">💝</span>
+                  <span class="template-title">Lời cảm ơn chân thành</span>
+                </button>
+                <button type="button" class="template-btn" data-template="me_2">
+                  <span class="template-icon">🌹</span>
+                  <span class="template-title">Tình cảm con dành cho mẹ</span>
+                </button>
+                <button type="button" class="template-btn" data-template="me_3">
+                  <span class="template-icon">💕</span>
+                  <span class="template-title">Lời chúc ấm áp</span>
+                </button>
+                <button type="button" class="template-btn" data-template="me_4">
+                  <span class="template-icon">✨</span>
+                  <span class="template-title">Lời tri ân sâu sắc</span>
+                </button>
+              </div>
+            </div>
+            <!-- Mẫu cho người yêu -->
+            <div>
+              <div style="font-size: 17px; font-weight: 600; color: #f093fb; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <span>💑</span>
+                <span>Mẫu cho người yêu</span>
+              </div>
+              <div class="letter-templates">
+                <button type="button" class="template-btn" data-template="nguoiyeu_1">
+                  <span class="template-icon">💝</span>
+                  <span class="template-title">Lời yêu thương</span>
+                </button>
+                <button type="button" class="template-btn" data-template="nguoiyeu_2">
+                  <span class="template-icon">🌹</span>
+                  <span class="template-title">Nhớ em</span>
+                </button>
+                <button type="button" class="template-btn" data-template="nguoiyeu_3">
+                  <span class="template-icon">💕</span>
+                  <span class="template-title">Lời chúc ngọt ngào</span>
+                </button>
+                <button type="button" class="template-btn" data-template="nguoiyeu_4">
+                  <span class="template-icon">✨</span>
+                  <span class="template-title">Tình yêu 8/3</span>
+                </button>
+              </div>
+            </div>
+            <!-- Mẫu lớp học -->
+            <div style="margin-top: 16px;">
+              <div style="font-size: 17px; font-weight: 600; color: #f093fb; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <span>🎓</span>
+                <span>Mẫu lớp học (bạn nam tặng bạn nữ)</span>
+              </div>
+              <div class="letter-templates">
+                <button type="button" class="template-btn" data-template="lophoc_1">
+                  <span class="template-icon">💐</span>
+                  <span class="template-title">Lời chúc vui tươi</span>
+                </button>
+                <button type="button" class="template-btn" data-template="lophoc_2">
+                  <span class="template-icon">✨</span>
+                  <span class="template-title">Lời tri ân trịnh trọng</span>
+                </button>
+                <button type="button" class="template-btn" data-template="lophoc_3">
+                  <span class="template-icon">😄</span>
+                  <span class="template-title">Kiểu hài hước dễ thương</span>
+                </button>
+                <button type="button" class="template-btn" data-template="lophoc_4">
+                  <span class="template-icon">💌</span>
+                  <span class="template-title">Lời nhắn từ trái tim</span>
+                </button>
+              </div>
+            </div>
+            <div class="help-text" style="margin-top: 15px;">Chọn một mẫu để tự động điền nội dung, sau đó bạn có thể chỉnh sửa theo ý muốn</div>
+          </div>
+        </div>
+
+        <!-- Tiêu đề thư -->
+        <div class="form-group">
+          <label for="letterTitle">Tiêu đề thư (tùy chọn)</label>
+          <div class="input-clearable-wrapper">
+            <input type="text" id="letterTitle" name="letterTitle" placeholder="Ví dụ: Gửi người tôi yêu thương nhất,">
+            <button type="button" class="btn-clear-input" aria-label="Xóa nội dung" title="Xóa">✕</button>
+          </div>
+          <div class="help-text">Tiêu đề sẽ hiển thị ở đầu lá thư</div>
+          <div id="errorLetterTitle" class="error-message" style="display: none;"></div>
+        </div>
+
+        <!-- Nội dung thư -->
+        <div class="form-group">
+          <label for="letterContent">Nội dung thư *</label>
+          <div class="input-clearable-wrapper">
+            <textarea id="letterContent" name="letterContent" class="letter-content-textarea"
+              placeholder="Nhập nội dung thư... Mỗi đoạn cách nhau bởi dòng trống sẽ được tách thành đoạn riêng."
+              required></textarea>
+            <button type="button" class="btn-clear-input btn-clear-input--textarea" aria-label="Xóa nội dung" title="Xóa">✕</button>
+          </div>
+          <div class="help-text">Mỗi đoạn cách nhau bởi dòng trống sẽ thành đoạn riêng</div>
+          <div id="errorLetterContent" class="error-message" style="display: none;"></div>
+        </div>
+
+        <!-- Chữ ký -->
+        <div class="form-group">
+          <label for="letterSignature">Chữ ký (tùy chọn)</label>
+          <div class="input-clearable-wrapper">
+            <input type="text" id="letterSignature" name="letterSignature" placeholder="Ví dụ: Người yêu bạn ❤️">
+            <button type="button" class="btn-clear-input" aria-label="Xóa nội dung" title="Xóa">✕</button>
+          </div>
+          <div class="help-text">Chữ ký sẽ hiển thị ở cuối lá thư, căn phải và in nghiêng</div>
+          <div id="errorLetterSignature" class="error-message" style="display: none;"></div>
+        </div>
+
+        <!-- Nhạc nền -->
+        <div class="form-group">
+          <label>Nhạc nền *</label>
+          <div style="border: 1.5px solid var(--create-border); border-radius: var(--create-radius-sm); padding: 16px; background: rgba(253,242,248,0.3);">
+            <!-- Option 1: Sample Music -->
+            <div style="margin-bottom: 14px;">
+              <label style="font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px;">
+                <input type="radio" name="musicType" value="sample" checked style="width: auto; margin: 0;">
+                <span style="font-size: 0.92rem; font-weight: 600; color: var(--create-text);">Chọn từ danh sách mẫu</span>
+              </label>
+              <div id="sampleMusicContainer" style="margin-top: 10px; margin-left: 0;">
+                <!-- Hidden input giữ URL nhạc đã chọn (để tương thích form submit/validation/draft) -->
+                <input type="hidden" id="sampleMusic" name="sampleMusic" value="">
+
+                <!-- 🎂 Featured: Nhạc sinh nhật — hiện dạng cards -->
+                <div id="featuredMusicList" class="create-music-list" style="display: none;">
+                  <!-- JS sẽ render các card nhạc sinh nhật tại đây -->
+                </div>
+
+                <!-- 🎵 Dropdown: Chọn bài hát -->
+                <select id="dropdownMusicSelect" class="create-select" style="margin-top: 10px; width: 100%;">
+                  <option value="">🎵 Chọn bài hát...</option>
+                </select>
+              </div>
+            </div>
+            <!-- Option 2: Custom Music -->
+            <div style="border-top: 1px dashed var(--create-border); padding-top: 14px;">
+              <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <label style="font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px;">
+                  <input type="radio" name="musicType" value="custom" style="width: auto; margin: 0;">
+                  <span style="font-size: 0.92rem; font-weight: 600; color: var(--create-text);">Tải file nhạc của bạn</span>
+                </label>
+                <button type="button" id="musicHelpIcon" class="btn-music-help">📖 Xem hướng dẫn chi tiết</button>
+              </div>
+              <div id="customMusicContainer" style="margin-top: 10px; margin-left: 24px; display: none;">
+                <input type="file" id="customMusic" name="customMusic" accept=".mp3,.wav,.m4a,.aac,.ogg,.flac,.webm,audio/*">
+              </div>
+            </div>
+          </div>
+          <!-- Audio Preview Player -->
+          <div id="audioPreviewContainer" style="margin-top: 14px; display: none;">
+            <label style="font-size: 0.88rem; font-weight: 600; color: var(--create-text); margin-bottom: 8px; display: block;">🎵 Nghe thử:</label>
+            <audio id="audioPreview" controls style="width: 100%; max-width: 500px;">
+              Trình duyệt của bạn không hỗ trợ phát audio.
+            </audio>
+          </div>
+          <div id="errorMusic" class="error-message" style="display: none;"></div>
+        </div>
+      </section>
+
+      <!-- ====== Section 3: Tùy chọn mở rộng ====== -->
+      <section class="create-section" aria-labelledby="sec-options">
+        <h2 id="sec-options" class="create-section__title">
+          <span class="create-section__title-icon">⚙️</span>
+          Tùy chọn mở rộng
+        </h2>
+
+        <!-- Quà VIP (ảnh bay) -->
+        <div class="form-group">
+          <label class="save-forever-label">
+            <input type="checkbox" id="vipGift" name="vipGift" style="width: auto; margin: 0; cursor: pointer;">
+            <span style="flex: 1;">
+              <strong class="text-gradient">Quà VIP (ảnh bay)</strong>
+              <span class="text-gradient" style="font-weight: 600; margin-left: 8px;">+20.000 ₫</span>
+            </span>
+          </label>
+          <div id="vipPhotosContainer" style="display: none; margin-top: 12px;">
+            <label for="vipPhotos" style="font-size: 0.88rem;">
+              Chọn ảnh (tối thiểu 1, tối đa 30 ảnh — chọn nhiều ảnh trong một lần)
+              <span class="help-text" style="display: block; margin-top: 4px; font-weight: normal;">Từ ảnh thứ 6 trở đi +5.000 ₫/ảnh. Ảnh sẽ hiển thị hiệu ứng bay trên trang quà.</span>
+            </label>
+            <input type="file" id="vipPhotos" name="vipPhotos" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" multiple>
+            <div id="vipPhotosError" class="error-message" style="display: none;"></div>
+            <div id="vipPhotosPreview" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;"></div>
+          </div>
+        </div>
+
+        <!-- Lưu vĩnh viễn -->
+        <div class="form-group" style="margin-top: 14px;">
+          <label class="save-forever-label">
+            <input type="checkbox" id="saveForever" name="saveForever" style="width: auto; margin: 0; cursor: pointer;">
+            <span style="flex: 1;">
+              <strong class="text-gradient">Lưu vĩnh viễn</strong>
+              <span class="text-gradient" style="font-weight: 600; margin-left: 8px;">+30.000 ₫</span>
+            </span>
+          </label>
+          <p class="save-forever-hint">💡 Nếu không thì quà sẽ bị vô hiệu hóa sau 30 ngày</p>
+        </div>
+      </section>
+
+      <!-- ====== Section 4: Thanh toán ====== -->
+      <section class="create-section" aria-labelledby="sec-payment">
+        <h2 id="sec-payment" class="create-section__title">
+          <span class="create-section__title-icon">💳</span>
+          Thanh toán
+        </h2>
+
+        <!-- Mã giảm giá (Voucher) -->
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label class="voucher-bar" for="voucherCheckbox">
+            <input type="checkbox" id="voucherCheckbox" name="voucherCheckbox" class="voucher-bar-checkbox">
+            <div class="voucher-bar-left">
+              <span class="voucher-bar-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
+                  <line x1="8.5" y1="7.5" x2="8.5" y2="10.5"></line>
+                  <line x1="8.5" y1="13.5" x2="8.5" y2="16.5"></line>
+                </svg>
+              </span>
+              <span class="voucher-bar-title">Mã giảm giá</span>
+              <span id="voucherBadgeApplied" class="badge" style="display: none; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 2px 9px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; box-shadow: 0 2px 6px rgba(16,185,129,0.3);">Đã áp dụng</span>
+            </div>
+            <svg class="voucher-bar-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </label>
+
+          <div id="voucherContainer" class="voucher-container">
+            <!-- Ô nhập mã voucher -->
+            <div class="voucher-input-row">
+              <input type="text" id="voucherCodeInput" placeholder="Nhập mã " autocomplete="off" autocapitalize="characters" />
+              <button type="button" id="btnApplyVoucher" class="btn-apply-voucher">Tìm kiếm</button>
+            </div>
+
+            <!-- Thông báo trạng thái voucher -->
+            <div id="voucherStatusMsg" style="display: none; margin-top: 6px; font-size: 0.78rem; padding: 5px 10px; border-radius: 6px; line-height: 1.3;"></div>
+
+            <!-- Danh sách voucher khả dụng -->
+            <div id="voucherListWrap" style="margin-top: 10px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <span style="font-size: 0.8rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.04em;">Mã khả dụng</span>
+                <button type="button" id="btnRefreshVouchers" style="background: none; border: none; font-size: 0.78rem; color: #64748b; cursor: pointer; font-weight: 600; padding: 0;" title="Làm mới">↻ Làm mới</button>
+              </div>
+              <div id="voucherListContainer" style="display: flex; flex-direction: column; gap: 6px; max-height: 190px; overflow-y: auto;">
+                <div style="text-align: center; color: var(--create-muted); font-size: 0.8rem; padding: 10px;">Đang tải danh sách mã...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Price Summary -->
+        <div class="price-summary" id="priceSummary">
+          <div class="price-breakdown" id="priceBreakdown">
+            <div class="price-item">
+              <span class="price-label">Giá gốc (bao gồm hoa và thư):</span>
+              <span class="price-value">49.000 ₫</span>
+            </div>
+            <div class="price-item" id="vipPriceItem" style="display: none;">
+              <span class="price-label">Quà VIP (ảnh bay):</span>
+              <span class="price-value">+20.000 ₫</span>
+            </div>
+            <div class="price-item" id="saveForeverPriceItem" style="display: none;">
+              <span class="price-label">Lưu trữ vĩnh viễn:</span>
+              <span class="price-value">+30.000 ₫</span>
+            </div>
+            <div class="price-item" id="voucherPriceItem" style="display: none; color: #16a34a;">
+              <span class="price-label" id="voucherPriceLabel" style="color: #16a34a; font-weight: 600;">Mã giảm giá:</span>
+              <span class="price-value" id="voucherPriceValue" style="color: #16a34a; font-weight: 700;">-0 ₫</span>
+            </div>
+            <div class="price-total">
+              <span class="price-label">Tổng cộng:</span>
+              <span class="price-value" id="totalPrice">49.000 ₫</span>
+            </div>
+          </div>
+
+          <!-- Phương thức thanh toán -->
+          <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e2e8f0;">
+            <label style="font-weight: 700; color: #64748b; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; display: block; margin-bottom: 6px;">💳 Phương thức thanh toán</label>
+            <div class="payment-methods-grid">
+              <label class="payment-method-label" id="methodBankLabel">
+                <input type="radio" name="paymentMethod" id="methodBank" value="PAYOS" checked>
+                <span class="payment-method-content">
+                  <span class="payment-method-icon">🏦</span>
+                  <span>
+                    <strong>Ngân hàng</strong>
+                    <small>MB, VCB, Momo...</small>
+                  </span>
+                </span>
+              </label>
+              <label class="payment-method-label" id="methodPolarLabel">
+                <input type="radio" name="paymentMethod" id="methodPolar" value="POLAR">
+                <span class="payment-method-content">
+                  <span class="payment-method-icon">🌐</span>
+                  <span>
+                    <strong>Thẻ quốc tế</strong>
+                    <small>Visa, Mastercard</small>
+                  </span>
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 14px;">
+          <button type="button" class="btn" id="btnPreview"
+            style="flex: 1; background: linear-gradient(135deg, #f9a8d4 0%, #e8457a 100%);">👁️ Xem trước</button>
+          <button type="submit" class="btn" id="btnSubmit" style="flex: 1;">📋 Thanh toán</button>
+        </div>
+        <p class="payment-notice">
+          <strong>Lưu ý:</strong> Nếu không nhận được kết quả sau khi đã thanh toán thành công. Hãy tự kiểm tra <a
+            href="#" id="linkOrderHistory" class="link-order-history">Lịch sử đơn hàng</a> ở trên đầu trang tạo.
+        </p>
+
+        <!-- Contact Section -->
+        <div class="contact-section" style="margin-top: 20px;">
+          <h2 class="section-title">📞 Liên hệ khi gặp lỗi</h2>
+          <div class="contact-buttons">
+            <a href="https://zalo.me/0363232681" target="_blank" rel="noopener" class="contact-btn contact-btn-zalo"
+              title="Liên hệ Zalo">
+              <img src="./assets/images/zalo.png" alt="Zalo" class="contact-icon">
+              <span class="contact-label">Zalo</span>
+            </a>
+            <a href="https://www.tiktok.com/@vanquyet1504" target="_blank" rel="noopener"
+              class="contact-btn contact-btn-tiktok" title="Liên hệ TikTok">
+              <img src="./assets/images/tiktok.png" alt="TikTok" class="contact-icon">
+              <span class="contact-label">TikTok</span>
+            </a>
+          </div>
+          <p class="contact-follow-text">
+            Hãy follow tiktok mình để theo dõi và nhận thông báo khi có sản phẩm mới nhất nhé
+          </p>
+        </div>
+      </section>
+    </form>
+    
+    <!-- Preview Section -->
+    <div class="preview-section" id="previewSection" style="display: none;">
+        <h2>📄 Kết quả trả về</h2>
+      <div class="preview-data" id="previewData"></div>
+    </div>
+    </div>
+  </div>
+  
+  <!-- Custom Confirm Modal -->
+  <div id="confirmModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <svg class="modal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <h3 class="modal-title">Xác nhận đăng xuất</h3>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn muốn đăng xuất khỏi tài khoản?
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal btn-modal-cancel" id="btnCancelLogout">Hủy</button>
+        <button class="btn-modal btn-modal-confirm" id="btnConfirmLogout">Đăng xuất</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal hỏi gia hạn vĩnh viễn (khi ấn Thanh toán mà chưa tích Lưu vĩnh viễn) -->
+  <div id="saveForeverConfirmModal" class="modal-overlay">
+    <div class="modal" style="max-width: 420px;">
+      <div class="modal-header">
+        <svg class="modal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <h3 class="modal-title">Gia hạn vĩnh viễn</h3>
+      </div>
+      <div class="modal-body">
+        Bạn có muốn gia hạn vĩnh viễn cho món quà với giá 30.000 ₫ không? Nếu không thì quà tồn tại trong 30 ngày thôi.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-modal btn-modal-cancel" id="btnSaveForeverNo">Không</button>
+        <button type="button" class="btn-modal btn-modal-confirm" id="btnSaveForeverYes">Có</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Music Help Dialog -->
+  <div class="modal-overlay" id="musicHelpModal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Hướng dẫn chuyển đổi video/link sang MP3</h3>
+        <button class="modal-close" id="closeMusicHelpModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="help-intro">
+          <p>Nếu chưa có sẵn file MP3, bạn có thể tải MP3 về, hoặc muốn đổi video từ TikTok hay YouTube chẳng hạn thì
+            làm theo hướng dẫn bên dưới:</p>
+        </div>
+        <div class="help-item">
+          <h4>🌐 Youtube</h4>
+          <p>1. Truy cập: <a href="https://v1.y2mate.nu/" target="_blank" rel="noopener">https://www.y2mate.com</a></p>
+          <p>2. Dán link YouTube vào ô tìm kiếm</p>
+          <p>3. Chọn định dạng MP3 và tải về</p>
+      </div>
+        <div class="help-item">
+          <h4>📱 Tiktok</h4>
+          <p>1. Truy cập: <a href="https://savetik.io" target="_blank" rel="noopener">https://savetik.io</a></p>
+          <p>2. Dán link TikTok vào ô tìm kiếm</p>
+          <p>3. Chọn tải MP3 và tải về</p>
+    </div>
+        <div class="help-note">
+          <p><strong>💡 Lưu ý:</strong> Sau khi tải file MP3 về, bạn có thể chọn file đó trong phần "Chọn file nhạc" ở
+            trên.</p>
+  </div>
+          </div>
+            </div>
+              </div>
+
+  <!-- QR Notice Modal (lần đầu bấm Tạo QR) -->
+  <div id="qrNoticeModal" class="modal-overlay">
+    <div class="modal" style="max-width: 440px;">
+      <div class="modal-header">
+        <svg class="modal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="5" height="5"></rect>
+                    <rect x="16" y="3" width="5" height="5"></rect>
+                    <rect x="3" y="16" width="5" height="5"></rect>
+                    <line x1="8" y1="5.5" x2="16" y2="5.5"></line>
+                    <line x1="8" y1="18.5" x2="16" y2="18.5"></line>
+                    <line x1="5.5" y1="8" x2="5.5" y2="16"></line>
+                    <line x1="18.5" y1="8" x2="18.5" y2="16"></line>
+                  </svg>
+        <h3 class="modal-title">📌 Thông báo</h3>
+              </div>
+      <div class="modal-body" style="text-align: center;">
+        <p style="margin-bottom: 16px; line-height: 1.7;">
+          Trước khi tạo QR hãy follow <a href="https://www.tiktok.com/@vanquyet1504" target="_blank" rel="noopener"
+            style="color: #a855f7; font-weight: 700; text-decoration: underline;">TikTok của mình</a> để theo dõi và
+          nhận thông báo khi có sản phẩm mới nhất nhé! 🎁
+        </p>
+        <p style="font-size: 14px; color: #6c757d; margin-bottom: 20px;">Sau khi follow xong hãy quay lại trang này ấn "Tạo QR" sẽ vào
+          thẳng vào trang tạo QR nhé.</p>
+          </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-modal btn-modal-confirm" id="btnConfirmQrRedirect">OK, follow ngay!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order History Modal -->
+  <div id="orderHistoryModal" class="modal-overlay">
+    <div class="modal order-history-modal">
+      <div class="modal-header">
+        <svg class="modal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <h3 class="modal-title">Lịch sử đơn hàng</h3>
+        <button class="modal-close" id="btnCloseOrderHistory"
+          style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6c757d; padding: 0; margin-left: auto;">&times;</button>
+          </div>
+      <div class="modal-body order-history-content" id="orderHistoryContent">
+        <div class="order-history-loading">
+          <div>Đang tải...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal phóng to ảnh minh họa câu chúc -->
+  <div id="introDemoModal" class="modal-overlay" style="display: none;" onclick="closeIntroDemoModal(event)">
+    <div class="intro-demo-modal-card">
+      <div class="intro-demo-img-wrap">
+        <button type="button" class="intro-demo-modal-close" onclick="closeIntroDemoModal()" aria-label="Đóng">&times;</button>
+        <img class="intro-demo-modal-img" src="./assets/images/cauchuc_demo.png" alt="Minh họa câu chúc mở đầu">
+      </div>
+      <div class="intro-demo-modal-caption">
+        ✨ Vị trí câu chúc kết bằng ánh sao phát sáng trên bầu trời
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openIntroDemoModal() {
+      var m = document.getElementById('introDemoModal');
+      if (m) {
+        m.classList.add('show');
+        m.style.display = 'flex';
+      }
+    }
+    function closeIntroDemoModal(e) {
+      if (!e || e.target === document.getElementById('introDemoModal') || e.target.closest('.intro-demo-modal-close')) {
+        var m = document.getElementById('introDemoModal');
+        if (m) {
+          m.classList.remove('show');
+          m.style.display = 'none';
+        }
+      }
+    }
+    window.openIntroDemoModal = openIntroDemoModal;
+    window.closeIntroDemoModal = closeIntroDemoModal;
+  </script>
+
+  <!-- Modal phóng to ảnh mẫu hoa -->
+  <div id="flowerDemoModal" class="modal-overlay" style="display: none;" onclick="closeFlowerDemoModal(event)" role="dialog" aria-modal="true" aria-label="Xem ảnh mẫu hoa lớn">
+    <div class="flower-demo-modal-card">
+      <div class="flower-demo-img-wrap">
+        <div class="flower-demo-media-wrap">
+          <button type="button" class="flower-demo-modal-close" onclick="closeFlowerDemoModal()" aria-label="Đóng">&times;</button>
+          <div class="flower-demo-modal-counter" id="flowerDemoModalCounter">1 / 13</div>
+          <button type="button" class="flower-demo-modal-nav flower-demo-modal-nav--prev" id="flowerDemoNavPrev" aria-label="Mẫu trước" title="Mẫu trước (Phím mũi tên trái)">&#10094;</button>
+          <button type="button" class="flower-demo-modal-nav flower-demo-modal-nav--next" id="flowerDemoNavNext" aria-label="Mẫu tiếp theo" title="Mẫu tiếp theo (Phím mũi tên phải)">&#10095;</button>
+          <img id="flowerDemoModalImg" class="flower-demo-modal-img" src="" alt="Ảnh mẫu hoa lớn">
+        </div>
+        <div class="flower-demo-modal-info">
+          <div class="flower-demo-modal-tag" id="flowerDemoModalTag">🌸 Tông màu</div>
+          <h3 class="flower-demo-modal-title" id="flowerDemoModalTitle">Tên mẫu</h3>
+          <p class="flower-demo-modal-desc" id="flowerDemoModalDesc">Mô tả mẫu</p>
+          <button type="button" class="flower-demo-modal-btn" id="flowerDemoModalSelectBtn">✓ Chọn mẫu này & Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var currentModalColor = 'classic';
+
+    function getFlowerColorKeys() {
+      var cards = document.querySelectorAll('.flower-color-grid .color-card');
+      var keys = [];
+      cards.forEach(function(c) {
+        var k = c.getAttribute('data-color');
+        if (k && keys.indexOf(k) === -1) keys.push(k);
+      });
+      if (!keys.length && typeof window.FLOWER_COLOR_DATA !== 'undefined') {
+        keys = Object.keys(window.FLOWER_COLOR_DATA);
+      }
+      return keys;
+    }
+
+    function renderFlowerDemoModalContent(color, animate) {
+      var colorData = (typeof window.FLOWER_COLOR_DATA !== 'undefined') ? window.FLOWER_COLOR_DATA : null;
+      if (!colorData && typeof FLOWER_COLOR_DATA !== 'undefined') colorData = FLOWER_COLOR_DATA;
+      if (!colorData) return;
+      if (!colorData[color]) color = 'classic';
+      currentModalColor = color;
+
+      var keys = getFlowerColorKeys();
+      var curIdx = keys.indexOf(color);
+      var total = keys.length || 13;
+
+      var data = colorData[color];
+      var img = document.getElementById('flowerDemoModalImg');
+      var tag = document.getElementById('flowerDemoModalTag');
+      var title = document.getElementById('flowerDemoModalTitle');
+      var desc = document.getElementById('flowerDemoModalDesc');
+      var counter = document.getElementById('flowerDemoModalCounter');
+      var selectBtn = document.getElementById('flowerDemoModalSelectBtn');
+
+      if (counter) {
+        counter.textContent = (curIdx >= 0 ? (curIdx + 1) : 1) + ' / ' + total;
+      }
+      if (img) {
+        if (animate) {
+          img.style.opacity = '0.35';
+          setTimeout(function() {
+            img.src = data.img || './assets/images/demo_flower_classic.png';
+            img.alt = data.label || 'Ảnh mẫu hoa';
+            img.style.opacity = '1';
+          }, 80);
+        } else {
+          img.src = data.img || './assets/images/demo_flower_classic.png';
+          img.alt = data.label || 'Ảnh mẫu hoa';
+          img.style.opacity = '1';
+        }
+      }
+      if (tag) tag.textContent = data.tag || '🌸 Ảnh minh họa màu hoa';
+      if (title) title.textContent = data.label || 'Tông màu hoa';
+      if (desc) desc.textContent = data.desc || '';
+
+      if (selectBtn) {
+        selectBtn.onclick = function() {
+          if (typeof window.selectFlowerColor === 'function') {
+            window.selectFlowerColor(currentModalColor);
+          }
+          if (typeof saveDraft === 'function') saveDraft();
+          closeFlowerDemoModal();
+        };
+      }
+    }
+
+    function navigateFlowerDemo(direction) {
+      var keys = getFlowerColorKeys();
+      if (!keys.length) return;
+      var curIdx = keys.indexOf(currentModalColor);
+      if (curIdx === -1) curIdx = 0;
+      var nextIdx = (curIdx + direction + keys.length) % keys.length;
+      var nextColor = keys[nextIdx];
+
+      renderFlowerDemoModalContent(nextColor, true);
+
+      // Cập nhật luôn lựa chọn màu hoa trên form để đồng bộ
+      if (typeof window.selectFlowerColor === 'function') {
+        window.selectFlowerColor(nextColor);
+      }
+    }
+
+    function openFlowerDemoModal(color) {
+      var m = document.getElementById('flowerDemoModal');
+      if (!m) return;
+      renderFlowerDemoModalContent(color, false);
+      m.classList.add('show');
+      m.style.display = 'flex';
+    }
+
+    function closeFlowerDemoModal(e) {
+      if (!e || e.target === document.getElementById('flowerDemoModal') || e.target.closest('.flower-demo-modal-close')) {
+        var m = document.getElementById('flowerDemoModal');
+        if (m) {
+          m.classList.remove('show');
+          m.style.display = 'none';
+        }
+      }
+    }
+
+    // Gán sự kiện click nút Prev / Next
+    var prevBtn = document.getElementById('flowerDemoNavPrev');
+    var nextBtn = document.getElementById('flowerDemoNavNext');
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        navigateFlowerDemo(-1);
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        navigateFlowerDemo(1);
+      });
+    }
+
+    window.openFlowerDemoModal = openFlowerDemoModal;
+    window.closeFlowerDemoModal = closeFlowerDemoModal;
+    window.navigateFlowerDemo = navigateFlowerDemo;
+
+    // Hỗ trợ phím Escape, mũi tên trái / phải
+    document.addEventListener('keydown', function(e) {
+      var m = document.getElementById('flowerDemoModal');
+      var isModalOpen = m && m.classList.contains('show') && m.style.display !== 'none';
+
+      if (e.key === 'Escape') {
+        closeFlowerDemoModal();
+        if (typeof closeIntroDemoModal === 'function') closeIntroDemoModal();
+      } else if (isModalOpen) {
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          navigateFlowerDemo(-1);
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          navigateFlowerDemo(1);
+        }
+      }
+    });
+
+    // Hỗ trợ vuốt tay chuyển mẫu trên màn hình cảm ứng
+    var touchStartX = 0;
+    var touchEndX = 0;
+    var flowerMediaWrap = document.querySelector('.flower-demo-media-wrap');
+    if (flowerMediaWrap) {
+      flowerMediaWrap.addEventListener('touchstart', function(e) {
+        if (e.changedTouches && e.changedTouches[0]) {
+          touchStartX = e.changedTouches[0].screenX;
+        }
+      }, { passive: true });
+      flowerMediaWrap.addEventListener('touchend', function(e) {
+        if (e.changedTouches && e.changedTouches[0]) {
+          touchEndX = e.changedTouches[0].screenX;
+          var diff = touchEndX - touchStartX;
+          if (Math.abs(diff) > 36) {
+            if (diff > 0) {
+              navigateFlowerDemo(-1); // vuốt phải -> xem ảnh trước
+            } else {
+              navigateFlowerDemo(1);  // vuốt trái -> xem ảnh kế tiếp
+            }
+          }
+        }
+      }, { passive: true });
+    }
+  </script>
+
+  <!-- Modal xem trước trong khung điện thoại (docs/PHONE_MOCKUP_PREVIEW_PATTERN.md) -->
+  <div id="previewModal" class="modal preview-theme-modal" role="dialog" aria-modal="true" aria-label="Xem trước sản phẩm">
+    <div class="modal-content modal-content-preview">
+      <!-- Nút đóng góc trên -->
+      <button type="button" class="close-modal" id="previewModalCloseBtn" aria-label="Đóng">&times;</button>
+
+      <!-- Lớp 3: Vùng chứa co giãn linh hoạt -->
+      <div id="previewModalPhoneWrap" class="preview-modal-phone-wrap">
+        <!-- Lớp 2: Hai hộp tính toán kích thước scale -->
+        <div id="previewPhoneScaleClip" class="preview-phone-scale-clip">
+          <div id="previewPhoneScaleInner" class="preview-phone-scale-inner">
+
+            <!-- Lớp 1: Khung điện thoại CSS -->
+            <div class="theme-detail-phone" role="region" aria-label="Khung máy điện thoại">
+              <!-- 4 nút vật lý cạnh máy -->
+              <span class="theme-detail-phone-side theme-detail-phone-side--silent" aria-hidden="true"></span>
+              <span class="theme-detail-phone-side theme-detail-phone-side--vol-up" aria-hidden="true"></span>
+              <span class="theme-detail-phone-side theme-detail-phone-side--vol-down" aria-hidden="true"></span>
+              <span class="theme-detail-phone-side theme-detail-phone-side--power" aria-hidden="true"></span>
+
+              <!-- Viền đen đệm màn hình -->
+              <div class="theme-detail-phone-bezel">
+                <!-- Màn hình điện thoại -->
+                <div class="theme-detail-phone-screen">
+                  <!-- Dynamic Island -->
+                  <span id="previewModalDynamicIsland" class="theme-detail-phone-island" aria-hidden="true"></span>
+
+                  <!-- <iframe> tải trang web thật -->
+                  <iframe id="previewModalIframe" class="theme-detail-iframe" title="Xem trước món quà 8/3"
+                    loading="eager" allow="fullscreen" allowfullscreen hidden></iframe>
+
+                  <!-- Fallback khi không có link iframe hoặc link lỗi -->
+                  <div id="previewModalFallback" class="theme-detail-preview-fallback" hidden>
+                    <img id="previewModalFallbackImg" class="theme-detail-fallback-img" src="" alt="" decoding="async">
+                    <p class="theme-detail-preview-fallback-text">Không hỗ trợ xem nhúng — hiển thị ảnh chụp minh hoạ.</p>
+                  </div>
+
+                  <!-- Thanh địa chỉ Safari nổi giả lập iOS -->
+                  <div id="previewModalSafariBar" class="theme-detail-safari-bar" role="toolbar" aria-label="Thanh địa chỉ trình duyệt">
+                    <div class="safari-bar-spacer" aria-hidden="true"></div>
+                    <div class="safari-bar-url-wrap" id="previewModalSafariUrlWrap" title="Mở trang trong tab mới">
+                      <!-- Icon ổ khoá SSL -->
+                      <svg class="safari-lock-icon" width="10" height="11" viewBox="0 0 12 14" fill="none" aria-hidden="true">
+                        <path d="M3.5 5.5V3.5C3.5 2.11929 4.61929 1 6 1C7.38071 1 8.5 2.11929 8.5 3.5V5.5M2 5.5H10C10.5523 5.5 11 5.94772 11 6.5V12C11 12.5523 10.5523 13 10 13H2C1.44772 13 1 12.5523 1 12V6.5C1 5.94772 1.44772 5.5 2 5.5Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span id="previewModalSafariDomain" class="safari-bar-domain">bouquet.giftory.pro</span>
+                    </div>
+                    <!-- Nút tải lại trang có animation xoay -->
+                    <button type="button" class="safari-bar-btn safari-bar-btn--reload" id="previewModalSafariReload" aria-label="Tải lại trang" title="Tải lại">
+                      <svg class="safari-reload-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <!-- Thanh Home bar phía đáy -->
+                  <span class="theme-detail-phone-home-indicator" aria-hidden="true"></span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Dòng chú thích phía dưới khung máy -->
+      <p id="previewModalHint" class="preview-modal-hint" hidden></p>
+
+      <!-- Footer các nút điều khiển -->
+      <div class="preview-modal-footer">
+        <button type="button" id="previewModalToggleIsland" class="btn preview-modal-toggle-island"
+          aria-pressed="false" aria-label="Ẩn Dynamic Island">Ẩn Dynamic Island</button>
+        <button type="button" id="previewModalOpenTab" class="btn btn-secondary" hidden>Mở trong tab mới</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/previewDB.js"></script>
+  <script src="js/create.js"></script>
+
+  <!-- Google Translate -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'vi',
+        autoDisplay: false,
+        includedLanguages: 'vi,en,id,ja,ko,zh-CN,th'
+      }, 'google_translate_element');
+    }
+  </script>
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit&hl=en"></script>
+
+  <!-- Language Dropdown toggle + wire to Google Translate -->
+  <script>
+  (function() {
+    var wrap = document.getElementById('langWrap');
+    var trigger = document.getElementById('navLinkLanguage');
+    var options = document.querySelectorAll('.language-option');
+
+    // Toggle dropdown
+    if (trigger) {
+      trigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        wrap.classList.toggle('active');
+        trigger.setAttribute('aria-expanded', wrap.classList.contains('active'));
+      });
+    }
+
+    // Close on outside click
+    document.addEventListener('click', function(e) {
+      if (wrap && !wrap.contains(e.target)) {
+        wrap.classList.remove('active');
+        if (trigger) trigger.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Map data-lang to Google Translate combo value & label
+    var LANG_MAP = {
+      'vi':    { gVal: 'vi',    label: 'VI' },
+      'en':    { gVal: 'en',    label: 'EN' },
+      'id':    { gVal: 'id',    label: 'ID' },
+      'ja':    { gVal: 'ja',    label: 'JA' },
+      'ko':    { gVal: 'ko',    label: 'KO' },
+      'zh-CN': { gVal: 'zh-CN', label: 'ZH' },
+      'th':    { gVal: 'th',    label: 'TH' }
+    };
+
+    function setActiveLanguageUI(langCode, label) {
+      options.forEach(function(btn) {
+        var isActive = btn.dataset.lang === langCode;
+        btn.classList.toggle('is-active', isActive);
+        btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+      var labelEl = document.getElementById('navLangLabel');
+      if (labelEl && label) labelEl.textContent = label;
+    }
+
+    function triggerGoogleTranslate(langCode) {
+      var combo = document.querySelector('#google_translate_element .goog-te-combo');
+      if (!combo) return;
+      combo.value = langCode;
+      combo.dispatchEvent(new Event('change'));
+    }
+
+    options.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var lang = btn.dataset.lang;
+        var info = LANG_MAP[lang];
+        if (!info) return;
+        setActiveLanguageUI(lang, info.label);
+        wrap.classList.remove('active');
+        if (trigger) trigger.setAttribute('aria-expanded', 'false');
+        triggerGoogleTranslate(info.gVal);
+      });
+    });
+  })();
+  </script>
+
+</body>
+</html>

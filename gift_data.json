@@ -1,0 +1,30 @@
+{
+  "success": true,
+  "data": {
+    "id": "6abe9a253085514f7389dcd6",
+    "introText": "Happy Vietnamese Women's Day 20/10",
+    "flowerColor": "classic",
+    "letterTitle": "Gửi tình yêu của anh,",
+    "letterContent": [
+      "Nhân ngày 20/10 - ngày của những người phụ nữ tuyệt vời - anh muốn nói với em rằng: em là điều tuyệt vời nhất trong cuộc đời anh.",
+      "Từ khi có em, mỗi ngày đều ý nghĩa hơn. Em cho anh động lực, cho anh niềm vui và cho anh một mái ấm để trở về.",
+      "Chúc em luôn xinh đẹp, tràn đầy năng lượng và mãi bên anh. Cảm ơn em đã là một nửa hoàn hảo của anh.",
+      "Yêu em mãi!"
+    ],
+    "letterSignature": "Một nửa của em 💞",
+    "vipPhotos": [
+      "https://pub-b20e97fa235346679eb882246abe5bed.r2.dev/uploads/gift83-vip-1-20261001-173636-dzn6fp.jpg",
+      "https://pub-b20e97fa235346679eb882246abe5bed.r2.dev/uploads/gift83-vip-2-20261001-173636-6cjisr.jpg",
+      "https://pub-b20e97fa235346679eb882246abe5bed.r2.dev/uploads/gift83-vip-3-20261001-173636-wiy30f.jpg",
+      "https://pub-b20e97fa235346679eb882246abe5bed.r2.dev/uploads/gift83-vip-4-20261001-173636-mzylm6.jpg",
+      "https://pub-b20e97fa235346679eb882246abe5bed.r2.dev/uploads/gift83-vip-5-20261001-173636-91srfu.jpg",
+      "https://pub-b20e97fa235346679eb882246abe5bed.r2.dev/uploads/gift83-vip-6-20261001-173636-nd4cjm.jpg"
+    ],
+    "musicType": "Sample",
+    "musicPath": "https://pub-b20e97fa235346679eb882246abe5bed.r2.dev/musics/danhchoem.mp3",
+    "customMusic": null,
+    "isSavePermanent": true,
+    "createdAt": "2026-10-01T17:36:37.671Z",
+    "updatedAt": "2026-10-14T15:49:38.799Z"
+  }
+}
