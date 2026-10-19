@@ -3208,7 +3208,7 @@
     touch-action: none;
     cursor: grab;
     isolation: isolate;
-    transition: transform 0.15s ease-out;
+    will-change: transform;
   }
   /* Lớp Glow Gradient trắng + xanh dương lung linh */
   .photo-float::before {
