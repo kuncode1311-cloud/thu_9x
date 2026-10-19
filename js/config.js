@@ -39,7 +39,7 @@ window.DEFAULT_GIFT_DATA = {
     "./assets/img/thu_6.jpg"
   ],
   
-  // Nhạc nền
+  // Nhạc nền (Hẹn Ngày Mai Yêu)
   musicType: "Sample",
-  musicPath: "./assets/musics/danhchoem.mp3"
+  musicPath: "./assets/musics/henngaymaiyeu.mp3"
 };
