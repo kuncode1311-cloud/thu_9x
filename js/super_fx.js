@@ -592,15 +592,141 @@
       });
     }
 
-    // Thêm âm thanh khi click mở phong bì thư
+    // Thêm âm thanh khi click mở phong bì thư & ẩn chỉ dẫn chạm
     var letterEl = document.querySelector('.letter');
+    var letterTapGuide = document.getElementById('letterTapGuide');
     if (letterEl) {
       letterEl.addEventListener('click', function () {
         playCrystalChime([440, 554.37, 659.25, 880]); // A chord
+        letterEl.classList.add('is-opened');
+        if (letterTapGuide) {
+          letterTapGuide.style.opacity = '0';
+          setTimeout(function() { letterTapGuide.style.display = 'none'; }, 400);
+        }
       });
     }
 
-    console.log('✨ [SuperFX] Đã kích hoạt toàn bộ hiệu ứng thế hệ mới: Polaroid 3D, Lightbox, Sparkle Trail, Petal Rain!');
+    // Khởi tạo Dây đèn đom đóm Fairy Lights
+    initFairyLights();
+
+    // Khởi tạo Tương tác 2 chú mèo
+    initCatInteractions();
+
+    // Khởi tạo Tương tác bấm vào bông hoa
+    initTulipInteractions();
+
+    console.log('✨ [SuperFX] Đã kích hoạt toàn bộ hiệu ứng thế hệ mới: Polaroid 3D, Fairy Lights, Cat Bubbles, Letter Guide!');
+  }
+
+  // --- J. DÂY ĐÈN ĐOM ĐÓM FAIRY LIGHTS ---
+  function initFairyLights() {
+    var wrap = document.getElementById('fairyLightsSystem');
+    if (!wrap) return;
+    var coords = [
+      { top: 26, left: 32 }, { top: 34, left: 46 }, { top: 24, left: 60 },
+      { top: 44, left: 28 }, { top: 48, left: 40 }, { top: 45, left: 56 },
+      { top: 36, left: 70 }, { top: 60, left: 34 }, { top: 62, left: 50 },
+      { top: 56, left: 66 }, { top: 72, left: 44 }, { top: 74, left: 58 },
+      { top: 82, left: 50 }, { top: 30, left: 76 }
+    ];
+    coords.forEach(function (pos, idx) {
+      var bulb = document.createElement('div');
+      bulb.className = 'fairy-bulb';
+      bulb.style.top = pos.top + '%';
+      bulb.style.left = pos.left + '%';
+      bulb.style.animationDelay = (idx * 0.24) + 's';
+      bulb.style.animationDuration = (2.0 + (idx % 4) * 0.5) + 's';
+      wrap.appendChild(bulb);
+    });
+  }
+
+  // --- K. TƯƠNG TÁC 2 CHÚ MÈO MEWMEW DỄ THƯƠNG ---
+  function initCatInteractions() {
+    var leftCat = document.getElementById('rabbitLeft');
+    var rightCat = document.getElementById('rabbitRight');
+    var leftBubble = document.getElementById('catBubbleLeft');
+    var rightBubble = document.getElementById('catBubbleRight');
+
+    var leftQuotes = [
+      "Thư ơi mở thư kìa! 😻",
+      "Trikun gửi hoa á! 💌",
+      "Ăn nhiều cơm vô nha! 🌸",
+      "Chúc Thư 20/10 vui vẻ! ✨"
+    ];
+    var rightQuotes = [
+      "Chạm lá thư đi Thư ơi! 🐾",
+      "Đứng yên cho Trikun xoa đầu! 🥰",
+      "Hoa tulip xinh xỉu! 🌷",
+      "Học chăm lên nha! 📚"
+    ];
+    var leftIdx = 0, rightIdx = 0;
+    var timerL = null, timerR = null;
+
+    function triggerCat(catEl, bubbleEl, quotes, getIdx, setIdx) {
+      if (!catEl || !bubbleEl) return;
+      playCrystalChime([880, 1108.73, 1318.51], 0.05); // high cute chime
+      var rect = catEl.getBoundingClientRect();
+      burstHearts(rect.left + rect.width / 2, rect.top, 8);
+
+      catEl.classList.remove('is-jumping');
+      void catEl.offsetWidth; // reset anim
+      catEl.classList.add('is-jumping');
+
+      var quote = quotes[getIdx() % quotes.length];
+      bubbleEl.textContent = quote;
+      bubbleEl.classList.add('is-visible');
+      setIdx(getIdx() + 1);
+
+      setTimeout(function () {
+        bubbleEl.classList.remove('is-visible');
+      }, 3500);
+    }
+
+    if (leftCat) {
+      leftCat.addEventListener('click', function (e) {
+        e.stopPropagation();
+        triggerCat(leftCat, leftBubble, leftQuotes, function () { return leftIdx; }, function (v) { leftIdx = v; });
+      });
+    }
+
+    if (rightCat) {
+      rightCat.addEventListener('click', function (e) {
+        e.stopPropagation();
+        triggerCat(rightCat, rightBubble, rightQuotes, function () { return rightIdx; }, function (v) { rightIdx = v; });
+      });
+    }
+
+    // Tự động bật chào nhẹ sau khi hoa nở xong
+    setTimeout(function () {
+      if (leftBubble && rightBubble) {
+        leftBubble.classList.add('is-visible');
+        rightBubble.classList.add('is-visible');
+        setTimeout(function () {
+          leftBubble.classList.remove('is-visible');
+          rightBubble.classList.remove('is-visible');
+        }, 4500);
+      }
+    }, 5500);
+  }
+
+  // --- L. TƯƠNG TÁC CHẠM VÀO TỪNG BÔNG HOA TULIP ---
+  function initTulipInteractions() {
+    var flowers = document.querySelectorAll('.flower');
+    flowers.forEach(function (fl) {
+      fl.style.cursor = 'pointer';
+      fl.addEventListener('click', function (e) {
+        e.stopPropagation();
+        playCrystalChime([659.25, 830.61, 987.77, 1318.51], 0.06);
+        var rect = fl.getBoundingClientRect();
+        burstHearts(rect.left + rect.width / 2, rect.top + rect.height / 2, 12);
+
+        // Hiệu ứng bừng sáng
+        fl.style.filter = 'drop-shadow(0 0 16px rgba(255, 105, 180, 0.95)) brightness(1.2)';
+        setTimeout(function () {
+          fl.style.filter = '';
+        }, 600);
+      });
+    });
   }
 
   if (document.readyState === 'loading') {

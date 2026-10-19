@@ -322,3 +322,253 @@
     opacity: 0;
   }
 }
+
+/* --- 7. CHỈ DẪN CHẠM MỞ THƯ NỔI BẬT & CUTE (LETTER TAP GUIDE) --- */
+.letter-tap-guide {
+  position: absolute;
+  top: -56px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  z-index: 1005;
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.4s ease;
+  animation: letterGuideFloat 1.8s ease-in-out infinite alternate;
+}
+
+.letter--visible .letter-tap-guide {
+  opacity: 1;
+}
+
+/* Đám mây chỉ dẫn phát sáng */
+.letter-tap-guide__cloud {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 240, 246, 0.96) 100%);
+  border: 1.8px solid #ec4899;
+  box-shadow: 
+    0 8px 24px rgba(236, 72, 153, 0.45),
+    0 0 18px rgba(255, 182, 193, 0.7);
+  border-radius: 999px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.letter-tap-guide__cloud .guide-icon {
+  font-size: 16px;
+  animation: heartPulse 1.2s ease-in-out infinite;
+}
+
+.letter-tap-guide__cloud .guide-text {
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: #db2777;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.letter-tap-guide__finger {
+  font-size: 20px;
+  margin-top: -2px;
+  animation: fingerPoint 0.9s ease-in-out infinite alternate;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+}
+
+@keyframes letterGuideFloat {
+  0% { transform: translateX(-50%) translateY(0); }
+  100% { transform: translateX(-50%) translateY(-7px); }
+}
+
+@keyframes fingerPoint {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(5px); }
+}
+
+/* Vòng sóng radar tỏa hào quang quanh phong bì thư */
+.letter-radar-wave {
+  position: absolute;
+  inset: -12px;
+  border-radius: 14px;
+  border: 2px solid rgba(244, 114, 182, 0.8);
+  box-shadow: 0 0 18px rgba(244, 114, 182, 0.6);
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+}
+
+.letter--visible .letter-radar-wave {
+  animation: letterRadar 2.2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+@keyframes letterRadar {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.9;
+  }
+  60% {
+    opacity: 0.45;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+/* Nhịp tim cho con dấu trái tim trên phong bì */
+.letter-seal {
+  animation: sealHeartbeat 1.6s ease-in-out infinite !important;
+}
+
+@keyframes sealHeartbeat {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  25% { transform: translate(-50%, -50%) scale(1.18); }
+  35% { transform: translate(-50%, -50%) scale(1.06); }
+  45% { transform: translate(-50%, -50%) scale(1.22); }
+  60% { transform: translate(-50%, -50%) scale(1); }
+}
+
+/* Ẩn chỉ dẫn khi thư đã mở */
+.letter-modal.is-open ~ .letter .letter-tap-guide,
+body:has(.letter-modal.is-open) .letter-tap-guide,
+.letter.is-opened .letter-tap-guide {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* --- 8. VẦNG HÀO QUANG TRĂNG HOÀNG CUNG MỜ ẢO (DREAMY MOON GLOW) --- */
+.bouquet-dreamy-glow {
+  position: fixed;
+  bottom: 12vmin;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 78vmin;
+  height: 90vmin;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 220, 235, 0.38) 0%,
+    rgba(254, 240, 138, 0.20) 42%,
+    rgba(244, 114, 182, 0.08) 65%,
+    transparent 80%
+  );
+  filter: blur(36px);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: moonGlowBreath 6s ease-in-out infinite alternate;
+}
+
+.ramo--visible ~ .bouquet-dreamy-glow,
+.ramo.ramo--visible + .bouquet-dreamy-glow,
+body:not(.not-loaded) .bouquet-dreamy-glow {
+  opacity: 1;
+}
+
+@keyframes moonGlowBreath {
+  0% { transform: translateX(-50%) scale(0.96); filter: blur(34px); }
+  100% { transform: translateX(-50%) scale(1.05); filter: blur(42px); }
+}
+
+/* --- 9. DÂY ĐÈN ĐOM ĐÓM FAIRY LIGHTS QUẤN QUANH BÓ HOA --- */
+.fairy-lights-system {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+.ramo--visible .fairy-lights-system {
+  opacity: 1;
+}
+
+.fairy-bulb {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fffbeb;
+  box-shadow: 
+    0 0 6px #fde047,
+    0 0 14px #f59e0b,
+    0 0 24px rgba(245, 158, 11, 0.85);
+  animation: bulbTwinkle 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes bulbTwinkle {
+  0%, 100% {
+    transform: scale(0.75);
+    opacity: 0.45;
+    box-shadow: 0 0 4px #fde047, 0 0 8px #f59e0b;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 1;
+    box-shadow: 0 0 10px #fef08a, 0 0 20px #fde047, 0 0 30px #f59e0b;
+  }
+}
+
+/* --- 10. BONG BÓNG THOẠI CHO 2 CHÚ MÈO MEWMEW --- */
+.rabbit {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+.rabbit:hover {
+  transform: scale(1.15) !important;
+  filter: drop-shadow(0 0 12px rgba(255, 182, 193, 0.8));
+}
+
+.rabbit.is-jumping {
+  animation: rabbitJump 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) !important;
+}
+
+@keyframes rabbitJump {
+  0%, 100% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(-28px) scale(1.25); }
+}
+
+.cat-speech-bubble {
+  position: absolute;
+  top: -46px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.85);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1.5px solid #ec4899;
+  border-radius: 12px;
+  padding: 5px 10px;
+  font-family: 'Pacifico', cursive;
+  font-size: 13px;
+  color: #be185d;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 20;
+}
+
+.cat-speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px 6px 0;
+  border-style: solid;
+  border-color: #ec4899 transparent transparent;
+  display: block;
+  width: 0;
+}
+
+.cat-speech-bubble.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}

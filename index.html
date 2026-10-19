@@ -383,8 +383,14 @@
         <div class="flower__line"></div>
       </div>
     </div>
+    <!-- Vầng sáng trăng hoàng cung mờ ảo (Dreamy Moon Glow) phía sau bó hoa -->
+    <div class="bouquet-dreamy-glow"></div>
+
     <div class="ramo">
       <img src="./assets/images/wrapper_flower.png" alt="Bó hoa">
+      
+      <!-- Dây đèn đom đóm Fairy Lights ấm áp quấn quanh bó hoa -->
+      <div class="fairy-lights-system" id="fairyLightsSystem"></div>
       <div class="montes">
         <!-- Bãi cỏ vector ma thuật bên trái -->
         <svg class="monte monte-izq" viewBox="0 0 120 70" preserveAspectRatio="none" aria-hidden="true">
@@ -474,12 +480,14 @@
           </g>
         </svg>
       </div>
-      <!-- Con thỏ đặt cạnh bó hoa -->
-      <div class="rabbit rabbit--left">
+      <!-- Con thỏ đặt cạnh bó hoa - Có thể chạm vào để trò chuyện -->
+      <div class="rabbit rabbit--left" id="rabbitLeft" role="button" tabindex="0" aria-label="Chú mèo con trái">
         <img src="./assets/images/mewmew.gif" alt="Con thỏ trái">
+        <div class="cat-speech-bubble" id="catBubbleLeft">Thư ơi mở thư kìa! 😻</div>
       </div>
-      <div class="rabbit rabbit--right">
+      <div class="rabbit rabbit--right" id="rabbitRight" role="button" tabindex="0" aria-label="Chú mèo con phải">
         <img src="./assets/images/mewmew.gif" alt="Con thỏ phải">
+        <div class="cat-speech-bubble" id="catBubbleRight">Trikun gửi hoa nè! 💌</div>
       </div>
     </div>
     <!-- Nơ buộc bó hoa (đặt ngoài .ramo với z-index cao hơn để che gốc hoa) -->
@@ -488,7 +496,19 @@
     </div>
 
     <!-- Lá thư trong bó hoa (đặt ngoài .ramo để tránh bị pointer-events: none) -->
-    <div class="letter">
+    <div class="letter" id="bouquetLetter">
+      <!-- Vòng sóng radar tỏa hào quang nhịp tim mời gọi chạm -->
+      <div class="letter-radar-wave"></div>
+
+      <!-- Bảng chỉ dẫn chạm mở thư siêu cute & nổi bật -->
+      <div class="letter-tap-guide" id="letterTapGuide">
+        <div class="letter-tap-guide__cloud">
+          <span class="guide-icon">💌</span>
+          <span class="guide-text">Chạm mở thư Thư ơi ✨</span>
+        </div>
+        <div class="letter-tap-guide__finger">👇</div>
+      </div>
+
       <div class="letter-envelope">
         <!-- Nắp gập tam giác ngược với viền hồng sắc nét, xuất phát chuẩn phân giác góc 45 độ -->
         <svg class="letter-flap-svg" viewBox="0 0 128 75" preserveAspectRatio="none">
