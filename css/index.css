@@ -706,10 +706,10 @@
 
   .fingerprint-guide-text {
     font-size: clamp(0.86rem, 3vw, 0.96rem);
-    color: rgba(255, 255, 255, 0.92);
-    text-shadow: 0 0 12px rgba(56, 189, 248, 0.6), 0 2px 6px rgba(0, 0, 0, 0.35);
-    letter-spacing: 0.4px;
-    font-weight: 500;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 0 14px rgba(244, 114, 182, 0.8), 0 2px 6px rgba(0, 0, 0, 0.4);
+    letter-spacing: 0.5px;
+    font-weight: 600;
     transition: all 0.3s ease;
     animation: guideBreathe 2.8s ease-in-out infinite alternate;
   }
@@ -1381,27 +1381,29 @@
     }
   }
 
-  /* Chữ tạo bởi hạt/chấm - kết hợp hạt sao Trắng tinh khiết & hào quang Xanh lam vũ trụ */
+  /* Chữ lời chúc 20/10 mở đầu - Sáng rạng rỡ, rõ nét 100%, ánh hào quang hồng ngọt ngào */
   .intro__text {
-    font-family: 'Dancing Script', cursive;
-    font-size: clamp(2.6rem, 10.5vw, 5.2rem);
+    font-family: 'Dancing Script', 'Comfortaa', cursive, sans-serif;
+    font-size: clamp(2.2rem, 7.5vw, 4.2rem);
     font-weight: 700;
     margin: 0;
-    padding: 0 8px;
+    padding: 0 16px;
     width: 100%;
-    max-width: min(92vw, 1150px);
-    line-height: 1.25;
+    max-width: min(94vw, 1150px);
+    line-height: 1.35;
     word-break: break-word;
     text-align: center;
     letter-spacing: 0.02em;
-    background-image: radial-gradient(circle at center, #ffffff 1px, #e0f2fe 1.15px, transparent 1.2px);
-    background-size: 2.9px 2.9px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #ffffff 15%, #ffe4e6 55%, #f472b6 100%);
     background-clip: text;
     -webkit-background-clip: text;
-    color: transparent;
-    text-shadow: none;
+    -webkit-text-fill-color: transparent;
+    filter: 
+      drop-shadow(0 2px 8px rgba(0, 0, 0, 0.75))
+      drop-shadow(0 0 16px rgba(244, 114, 182, 0.85))
+      drop-shadow(0 0 36px rgba(236, 72, 153, 0.6));
     animation: introTextReveal 2.2s ease-out both;
-    filter: drop-shadow(0 0 1.8px rgba(255, 255, 255, 1)) drop-shadow(0 0 7px rgba(186, 230, 253, 0.95)) drop-shadow(0 0 18px rgba(56, 189, 248, 0.8)) drop-shadow(0 0 32px rgba(14, 165, 233, 0.5));
   }
 
   @keyframes introTextReveal {
@@ -2470,13 +2472,12 @@
       padding-top: clamp(0.6rem, 2.8vh, 1.2rem);
     }
     .intro__text {
-      font-size: clamp(1.3rem, 8vh, 2.4rem);
-      background-size: 2.6px 2.6px;
-      line-height: 1.2;
+      font-size: clamp(1.4rem, 8vh, 2.4rem);
+      line-height: 1.25;
       padding: 0 8px;
       width: 100%;
       max-width: 90vw;
-      filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 1)) drop-shadow(0 0 6px rgba(186, 230, 253, 0.9)) drop-shadow(0 0 16px rgba(56, 189, 248, 0.75));
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 14px rgba(244, 114, 182, 0.85));
     }
     .rabbit {
       width: 75px;
@@ -2529,12 +2530,11 @@
       padding-right: 36px;
     }
     .intro__text {
-      font-size: clamp(2.8rem, 4.5vw, 4.8rem);
+      font-size: clamp(2.6rem, 4.2vw, 4.2rem);
       width: 100%;
       max-width: 1150px;
-      background-size: 2.9px 2.9px;
       letter-spacing: 0.02em;
-      filter: drop-shadow(0 0 1.8px rgba(255, 255, 255, 1)) drop-shadow(0 0 7px rgba(186, 230, 253, 0.95)) drop-shadow(0 0 18px rgba(56, 189, 248, 0.8)) drop-shadow(0 0 32px rgba(14, 165, 233, 0.5));
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 18px rgba(244, 114, 182, 0.85)) drop-shadow(0 0 36px rgba(236, 72, 153, 0.6));
     }
   }
   
@@ -2958,28 +2958,30 @@
   }
 
   .letter-modal__title {
-    font-family: 'Dancing Script', cursive;
-    font-size: 30px;
+    font-family: 'Dancing Script', 'Comfortaa', cursive;
+    font-size: clamp(24px, 5.5vw, 30px);
     font-weight: 700;
-    color: var(--letter-modal-accent, #c2185b);
-    margin: 0 0 20px 0;
-    padding: 0 32px;
-    line-height: 1.3;
+    color: #be185d;
+    margin: 0 0 18px 0;
+    padding: 0 24px;
+    line-height: 1.35;
     text-align: center;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
   }
 
   .letter-modal__content {
-    font-family: 'Dancing Script', cursive;
-    font-size: 21px;
+    font-family: 'Comfortaa', 'Outfit', system-ui, -apple-system, sans-serif;
+    font-size: clamp(15px, 3.8vw, 16.5px);
     font-weight: 600;
-    line-height: 1.75;
-    color: #4a4a4a;
+    line-height: 1.85;
+    color: #1f2937;
     white-space: pre-wrap;
     word-break: break-word;
+    letter-spacing: 0.01em;
   }
 
   .letter-modal__content p {
-    margin: 0 0 12px 0;
+    margin: 0 0 14px 0;
   }
 
   .letter-modal__content p:last-child {
@@ -2988,16 +2990,16 @@
 
   .letter-modal__signature-wrap {
     text-align: right;
-    margin-top: 20px !important;
+    margin-top: 22px !important;
     margin-bottom: 0 !important;
   }
 
   .letter-modal__signature {
     font-family: 'Dancing Script', cursive;
-    font-size: 1.25em;
+    font-size: 1.4em;
     font-style: italic;
-    font-weight: 600;
-    color: var(--letter-modal-accent, #c2185b);
+    font-weight: 700;
+    color: #be185d;
   }
 
   .letter-modal__footer {
@@ -3006,22 +3008,22 @@
   }
 
   .letter-modal__btn-continue {
-    font-family: 'Dancing Script', cursive;
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-family: 'Comfortaa', 'Outfit', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
     color: #fff;
-    background: var(--letter-modal-btn-gradient, linear-gradient(135deg, #c2185b 0%, #e91e63 100%));
+    background: linear-gradient(135deg, #ec4899 0%, #db2777 50%, #be185d 100%);
     border: none;
     border-radius: 999px;
-    padding: 12px 28px;
+    padding: 13px 32px;
     cursor: pointer;
-    box-shadow: 0 4px 15px var(--letter-border-glow, rgba(194, 24, 91, 0.4));
+    box-shadow: 0 6px 20px rgba(219, 39, 119, 0.45);
     transition: transform 0.2s, box-shadow 0.2s;
     filter: url(#wavyBorderLight);
   }
   .letter-modal__btn-continue:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 20px var(--letter-border-glow, rgba(194, 24, 91, 0.5));
+    box-shadow: 0 8px 24px rgba(219, 39, 119, 0.6);
   }
 
   /* Ẩn bó hoa + nội dung, chỉ còn nền */
@@ -3419,13 +3421,12 @@
     }
     .intro__text {
       /* Theo chiều ngang, nhưng màn thấp thì co theo chiều cao để không đè xuống bó hoa */
-      font-size: clamp(1.85rem, min(9.6vw, calc(var(--app-h) * 0.064)), 3.4rem);
-      line-height: 1.22;
+      font-size: clamp(1.75rem, min(8.8vw, calc(var(--app-h) * 0.062)), 3.2rem);
+      line-height: 1.25;
       width: 100%;
       max-width: 94vw;
-      padding: 0 4px;
-      background-size: 2.8px 2.8px;
-      filter: drop-shadow(0 0 1.6px rgba(255, 255, 255, 1)) drop-shadow(0 0 6.5px rgba(186, 230, 253, 0.92)) drop-shadow(0 0 16px rgba(56, 189, 248, 0.78));
+      padding: 0 6px;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 14px rgba(244, 114, 182, 0.85));
     }
   }
 

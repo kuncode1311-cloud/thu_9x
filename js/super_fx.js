@@ -592,19 +592,43 @@
       });
     }
 
-    // Thêm âm thanh khi click mở phong bì thư & ẩn chỉ dẫn chạm
+    // Thêm âm thanh khi click mở phong bì thư & quản lý banner chỉ dẫn chạm
     var letterEl = document.querySelector('.letter');
-    var letterTapGuide = document.getElementById('letterTapGuide');
+    var letterOpenPrompt = document.getElementById('letterOpenPrompt');
+    var letterModal = document.getElementById('letterModal');
+
+    function hideOpenPrompt() {
+      if (letterOpenPrompt) {
+        letterOpenPrompt.classList.remove('is-visible');
+        letterOpenPrompt.classList.add('is-hidden');
+      }
+    }
+
+    if (letterOpenPrompt) {
+      letterOpenPrompt.addEventListener('click', function (e) {
+        e.stopPropagation();
+        playCrystalChime([440, 554.37, 659.25, 880]);
+        hideOpenPrompt();
+        if (letterEl) {
+          letterEl.click();
+        }
+      });
+    }
+
     if (letterEl) {
       letterEl.addEventListener('click', function () {
         playCrystalChime([440, 554.37, 659.25, 880]); // A chord
         letterEl.classList.add('is-opened');
-        if (letterTapGuide) {
-          letterTapGuide.style.opacity = '0';
-          setTimeout(function() { letterTapGuide.style.display = 'none'; }, 400);
-        }
+        hideOpenPrompt();
       });
     }
+
+    // Tự động bật hiện banner mở thư sau khi bó hoa đã xuất hiện (~4s)
+    setTimeout(function () {
+      if (letterOpenPrompt && (!letterModal || !letterModal.classList.contains('is-open'))) {
+        letterOpenPrompt.classList.add('is-visible');
+      }
+    }, 4000);
 
     // Khởi tạo Dây đèn đom đóm Fairy Lights
     initFairyLights();
@@ -615,7 +639,7 @@
     // Khởi tạo Tương tác bấm vào bông hoa
     initTulipInteractions();
 
-    console.log('✨ [SuperFX] Đã kích hoạt toàn bộ hiệu ứng thế hệ mới: Polaroid 3D, Fairy Lights, Cat Bubbles, Letter Guide!');
+    console.log('✨ [SuperFX] Đã kích hoạt toàn bộ hiệu ứng thế hệ mới: Polaroid 3D, Fairy Lights, Letter Open Prompt!');
   }
 
   // --- J. DÂY ĐÈN ĐOM ĐÓM FAIRY LIGHTS ---
@@ -642,71 +666,20 @@
 
   // --- K. TƯƠNG TÁC 2 CHÚ MÈO MEWMEW DỄ THƯƠNG ---
   function initCatInteractions() {
-    var leftCat = document.getElementById('rabbitLeft');
-    var rightCat = document.getElementById('rabbitRight');
-    var leftBubble = document.getElementById('catBubbleLeft');
-    var rightBubble = document.getElementById('catBubbleRight');
-
-    var leftQuotes = [
-      "Thư ơi mở thư kìa! 😻",
-      "Trikun gửi hoa á! 💌",
-      "Ăn nhiều cơm vô nha! 🌸",
-      "Chúc Thư 20/10 vui vẻ! ✨"
-    ];
-    var rightQuotes = [
-      "Chạm lá thư đi Thư ơi! 🐾",
-      "Đứng yên cho Trikun xoa đầu! 🥰",
-      "Hoa tulip xinh xỉu! 🌷",
-      "Học chăm lên nha! 📚"
-    ];
-    var leftIdx = 0, rightIdx = 0;
-    var timerL = null, timerR = null;
-
-    function triggerCat(catEl, bubbleEl, quotes, getIdx, setIdx) {
-      if (!catEl || !bubbleEl) return;
-      playCrystalChime([880, 1108.73, 1318.51], 0.05); // high cute chime
-      var rect = catEl.getBoundingClientRect();
-      burstHearts(rect.left + rect.width / 2, rect.top, 8);
-
-      catEl.classList.remove('is-jumping');
-      void catEl.offsetWidth; // reset anim
-      catEl.classList.add('is-jumping');
-
-      var quote = quotes[getIdx() % quotes.length];
-      bubbleEl.textContent = quote;
-      bubbleEl.classList.add('is-visible');
-      setIdx(getIdx() + 1);
-
-      setTimeout(function () {
-        bubbleEl.classList.remove('is-visible');
-      }, 3500);
-    }
-
-    if (leftCat) {
-      leftCat.addEventListener('click', function (e) {
+    var cats = document.querySelectorAll('.rabbit');
+    cats.forEach(function (cat) {
+      cat.style.cursor = 'pointer';
+      cat.addEventListener('click', function (e) {
         e.stopPropagation();
-        triggerCat(leftCat, leftBubble, leftQuotes, function () { return leftIdx; }, function (v) { leftIdx = v; });
-      });
-    }
+        playCrystalChime([880, 1108.73, 1318.51], 0.05); // high cute chime
+        var rect = cat.getBoundingClientRect();
+        burstHearts(rect.left + rect.width / 2, rect.top, 10);
 
-    if (rightCat) {
-      rightCat.addEventListener('click', function (e) {
-        e.stopPropagation();
-        triggerCat(rightCat, rightBubble, rightQuotes, function () { return rightIdx; }, function (v) { rightIdx = v; });
+        cat.classList.remove('is-jumping');
+        void cat.offsetWidth; // reset anim
+        cat.classList.add('is-jumping');
       });
-    }
-
-    // Tự động bật chào nhẹ sau khi hoa nở xong
-    setTimeout(function () {
-      if (leftBubble && rightBubble) {
-        leftBubble.classList.add('is-visible');
-        rightBubble.classList.add('is-visible');
-        setTimeout(function () {
-          leftBubble.classList.remove('is-visible');
-          rightBubble.classList.remove('is-visible');
-        }, 4500);
-      }
-    }, 5500);
+    });
   }
 
   // --- L. TƯƠNG TÁC CHẠM VÀO TỪNG BÔNG HOA TULIP ---
