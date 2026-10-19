@@ -57,60 +57,135 @@
     } catch (e) {}
   }
 
-  // --- B. DANH SÁCH CAPTION NHÃN DÁN CUTE CHO ẢNH THƯ 9X ---
-  var PHOTO_LABELS = [
-    "Thư 9x nè ✨",
-    "Xinh xắn rạng ngời 🌸",
-    "Cho Trikun xoa đầu 🥰",
-    "Nhớ ăn nhiều vô nha 🍕",
-    "Nụ cười triệu like 💖",
-    "20/10 siêu hạnh phúc 🌷"
+  // --- B. BỘ SƯU TẬP ẢNH KỶ NIỆM & LỜI NHẮN ĐỘC QUYỀN DÀNH CHO THƯ 9X ---
+  var PHOTO_STORIES = [
+    {
+      id: 1,
+      match: "thu_1",
+      src: "./assets/img/thu_1.jpg",
+      title: "Bé Thư má bánh bao 🐰",
+      sticker: "🐰 Má phúng phính",
+      stamp: "🌸",
+      washi: "linear-gradient(135deg, #ffccd5, #ffb3c1)",
+      note: "Cái mặt phúng phính búng ra sữa cưng xỉu! Ráng ăn nhiều cơm vô giữ má tròn hoài nghen!"
+    },
+    {
+      id: 2,
+      match: "thu_2",
+      src: "./assets/img/thu_2.jpg",
+      title: "Cô bạn chăm học 📚",
+      sticker: "📚 Chăm học nè",
+      stamp: "⭐",
+      washi: "linear-gradient(135deg, #e9d5ff, #d8b4fe)",
+      note: "Đầu óc thông minh lanh lợi sẵn rồi nên ráng học giỏi nha! Nhưng học thì học, cấm thức khuya hại sức khỏe đó!"
+    },
+    {
+      id: 3,
+      match: "thu_3",
+      src: "./assets/img/thu_3.jpg",
+      title: "Nụ cười tỏa nắng 🌷",
+      sticker: "🌷 Cười tươi nha",
+      stamp: "💖",
+      washi: "linear-gradient(135deg, #fef08a, #fde047)",
+      note: "Dù ngày mưa hay ngày nắng, mong nụ cười của Thư lúc nào cũng rạng rỡ và an yên như thế này nhé!"
+    },
+    {
+      id: 4,
+      match: "thu_4",
+      src: "./assets/img/thu_4.jpg",
+      title: "Bé ngố đi dạo 🎧",
+      sticker: "🧀 Rủ đi chơi nè",
+      stamp: "🐾",
+      washi: "linear-gradient(135deg, #a7f3d0, #6ee7b7)",
+      note: "Có chuyện gì vui hay buồn nhớ rủ Trikun đi chơi cùng, đừng có lặn mất tăm một mình đó nha!"
+    },
+    {
+      id: 5,
+      match: "thu_5",
+      src: "./assets/img/thu_5.jpg",
+      title: "Đầu tròn ủm cưng ghê 🥰",
+      sticker: "🥰 Cho xoa đầu nha",
+      stamp: "✨",
+      washi: "linear-gradient(135deg, #fecdd3, #fda4af)",
+      note: "Cái đầu tròn tròn này sinh ra là để cho Trikun xoa đầu á! Đứng yên cho xoa đầu hổng được né nghe chưa!"
+    },
+    {
+      id: 6,
+      match: "thu_6",
+      src: "./assets/img/thu_6.jpg",
+      title: "Điều dịu dàng 20/10 ✨",
+      sticker: "✨ Xinh nhất 20/10",
+      stamp: "💌",
+      washi: "linear-gradient(135deg, #fed7aa, #fdba74)",
+      note: "20/10 chúc Thư 9x luôn tự tin tỏa sáng theo cách riêng của mình, luôn hạnh phúc và ngập tràn niềm vui!"
+    }
   ];
 
-  // --- C. NÂNG CẤP KHUNG ẢNH POLAROID BAY ---
+  function getStoryForSrc(src) {
+    if (!src) return PHOTO_STORIES[0];
+    for (var i = 0; i < PHOTO_STORIES.length; i++) {
+      if (src.indexOf(PHOTO_STORIES[i].match) !== -1 || src.indexOf('thu_' + (i + 1)) !== -1) {
+        return PHOTO_STORIES[i];
+      }
+    }
+    return PHOTO_STORIES[0];
+  }
+
+  function getStoryIndex(srcOrId) {
+    if (typeof srcOrId === 'number') {
+      return (srcOrId - 1 + PHOTO_STORIES.length) % PHOTO_STORIES.length;
+    }
+    for (var i = 0; i < PHOTO_STORIES.length; i++) {
+      if (srcOrId && (srcOrId.indexOf(PHOTO_STORIES[i].match) !== -1 || srcOrId.indexOf('thu_' + (i + 1)) !== -1)) {
+        return i;
+      }
+    }
+    return 0;
+  }
+
+  // --- C. NÂNG CẤP KHUNG ẢNH POLAROID BAY CUTE & GIÀU CẢM XÚC ---
   function decoratePhotoFloat(el) {
     if (el.dataset.decorated) return;
     el.dataset.decorated = 'true';
 
-    // 1. Thêm miếng băng dính washi tape
+    var img = el.querySelector('img');
+    var src = img ? img.getAttribute('src') || '' : '';
+    var story = getStoryForSrc(src);
+    el.dataset.storyId = story.id;
+
+    // 1. Thêm miếng băng dính washi pastel theo màu riêng từng ảnh
     var washi = document.createElement('div');
     washi.className = 'photo-float-washi';
+    washi.style.background = story.washi;
     el.appendChild(washi);
 
-    // 2. Thêm hiệu ứng tia sáng óng ánh (Shimmer)
+    // 2. Thêm con tem sticker góc ảnh
+    var stamp = document.createElement('span');
+    stamp.className = 'photo-float-stamp';
+    stamp.textContent = story.stamp;
+    el.appendChild(stamp);
+
+    // 3. Thêm vệt sáng quét lấp lánh (Shimmer)
     var shimmer = document.createElement('div');
     shimmer.className = 'photo-float-shimmer';
     el.appendChild(shimmer);
 
-    // 3. Gán nhãn chữ dán nghệ thuật
-    var labelText = el.dataset.label;
-    if (!labelText) {
-      var img = el.querySelector('img');
-      var src = img ? img.getAttribute('src') || '' : '';
-      var idx = 0;
-      var match = src.match(/thu_(\d+)/) || src.match(/photo_(\d+)/);
-      if (match) {
-        idx = (parseInt(match[1], 10) - 1) % PHOTO_LABELS.length;
-      } else {
-        idx = Math.floor(Math.random() * PHOTO_LABELS.length);
-      }
-      labelText = PHOTO_LABELS[idx];
-      el.dataset.label = labelText;
-    }
+    // 4. Huy hiệu nhắc chạm "Chạm xem nè 💖"
+    var tapPill = document.createElement('span');
+    tapPill.className = 'photo-tap-pill';
+    tapPill.textContent = 'Chạm xem 💖';
+    el.appendChild(tapPill);
 
+    // 5. Nhãn sticker tình cảm dưới đáy ảnh
     var labelEl = document.createElement('div');
     labelEl.className = 'photo-float-label';
-    labelEl.textContent = labelText;
+    labelEl.textContent = story.sticker;
     el.appendChild(labelEl);
 
-    // 4. Click vào ảnh để mở Lightbox phóng to 3D
+    // 6. Click vào ảnh để mở Lightbox phóng to 3D & đọc lời nhắn
     el.addEventListener('click', function (e) {
-      // Nếu đang kéo thả thì không mở
       if (el.classList.contains('is-dragging')) return;
-      var img = el.querySelector('img');
-      if (img && img.src) {
-        openPhotoLightbox(img.src, labelText, e.clientX, e.clientY);
-      }
+      openPhotoLightbox(story.id, e.clientX, e.clientY);
     });
   }
 
@@ -130,15 +205,18 @@
     });
 
     observer.observe(container, { childList: true });
-    // Decorate các ảnh đang có sẵn
     container.querySelectorAll('.photo-float').forEach(decoratePhotoFloat);
   }
 
-  // --- D. MODAL PHÓNG TO ẢNH 3D PARALLAX TILT (LIGHTBOX) ---
+  // --- D. MODAL PHÓNG TO ẢNH 3D PARALLAX TILT & THẺ KỶ NIỆM (LIGHTBOX) ---
   var photoModalEl = null;
   var photoModalCard = null;
   var photoModalImg = null;
-  var photoModalCaption = null;
+  var photoModalTitle = null;
+  var photoModalNote = null;
+  var currentStoryIdx = 0;
+  var patCounter = 0;
+  var patToastTimer = null;
 
   function createPhotoModal() {
     photoModalEl = document.createElement('div');
@@ -148,12 +226,26 @@
       '  <div class="fx-photo-card" id="fxPhotoCard">',
       '    <button type="button" class="fx-photo-card-close" id="fxPhotoClose" aria-label="Đóng">&times;</button>',
       '    <img id="fxPhotoImg" src="" alt="Ảnh kỷ niệm Thư 9x">',
-      '    <div class="fx-photo-card-caption" id="fxPhotoCaption">Thư 9x nè ✨</div>',
+      '    <div class="fx-photo-card-info">',
+      '      <div class="fx-photo-card-title" id="fxPhotoTitle">Bé Thư 🐰</div>',
+      '      <div class="fx-photo-story-note" id="fxPhotoStoryNote">Lời nhắn của Trikun...</div>',
+      '    </div>',
       '  </div>',
       '  <div class="fx-photo-actions">',
-      '    <button type="button" class="fx-btn-action" id="fxBtnHeart">Thả tim 💕</button>',
-      '    <button type="button" class="fx-btn-action" id="fxBtnCloseAction">Tiếp tục ngắm 🌷</button>',
+      '    <button type="button" class="fx-btn-action fx-btn-pat" id="fxBtnPatHead" aria-label="Xoa đầu Thư">',
+      '      <span class="btn-icon">🥰</span>',
+      '      <span class="btn-text">Xoa đầu Thư nè</span>',
+      '      <span class="pat-badge" id="fxPatCounter">+1</span>',
+      '    </button>',
+      '    <button type="button" class="fx-btn-action fx-btn-next" id="fxBtnNextPhoto">',
+      '      <span>Ảnh kế tiếp</span>',
+      '      <span class="btn-icon">➡️</span>',
+      '    </button>',
+      '    <button type="button" class="fx-btn-action fx-btn-close" id="fxBtnCloseAction">',
+      '      <span>Đóng 🌸</span>',
+      '    </button>',
       '  </div>',
+      '  <div class="fx-pat-toast" id="fxPatToast">🥰 Đã xoa đầu Thư!</div>',
       '</div>'
     ].join('');
 
@@ -161,7 +253,8 @@
 
     photoModalCard = document.getElementById('fxPhotoCard');
     photoModalImg = document.getElementById('fxPhotoImg');
-    photoModalCaption = document.getElementById('fxPhotoCaption');
+    photoModalTitle = document.getElementById('fxPhotoTitle');
+    photoModalNote = document.getElementById('fxPhotoStoryNote');
 
     // Đóng khi bấm nút x hoặc bấm nền
     document.getElementById('fxPhotoClose').addEventListener('click', closePhotoLightbox);
@@ -170,12 +263,45 @@
       if (e.target === photoModalEl) closePhotoLightbox();
     });
 
-    // Bấm nút Thả tim
-    document.getElementById('fxBtnHeart').addEventListener('click', function (e) {
+    // Nút tương tác siêu cute: Xoa đầu Thư
+    var patBtn = document.getElementById('fxBtnPatHead');
+    var patCounterEl = document.getElementById('fxPatCounter');
+    var patToastEl = document.getElementById('fxPatToast');
+
+    patBtn.addEventListener('click', function (e) {
       e.stopPropagation();
-      playCrystalChime([783.99, 987.77, 1174.66, 1567.98]); // G5, B5, D6, G6
+      patCounter++;
+      patCounterEl.textContent = '+' + patCounter;
+
+      playCrystalChime([880, 1108.73, 1318.51, 1760], 0.06);
+
       var rect = this.getBoundingClientRect();
-      burstHearts(rect.left + rect.width / 2, rect.top, 25);
+      burstHearts(rect.left + rect.width / 2, rect.top, 20);
+
+      var toastMessages = [
+        "🥰 Đã xoa đầu Thư x" + patCounter + " cái! Đầu tròn cưng xỉu 💖",
+        "✨ Ngoan ngoãn đứng yên cho Trikun xoa đầu hoài nha! 🐾",
+        "🍚 Nhớ ăn nhiều cơm vô cho má phúng phính búng ra sữa nghen! 😋",
+        "🧀 Hôm nào rảnh nhớ rủ tôi đi chơi á, cấm trốn! 🌷",
+        "🌸 20/10 chúc Thư mãi rạng ngời và bình an nhất trần đời! ✨"
+      ];
+      var msg = toastMessages[(patCounter - 1) % toastMessages.length];
+      patToastEl.textContent = msg;
+      patToastEl.classList.remove('is-showing');
+      void patToastEl.offsetWidth;
+      patToastEl.classList.add('is-showing');
+
+      if (patToastTimer) clearTimeout(patToastTimer);
+      patToastTimer = setTimeout(function () {
+        patToastEl.classList.remove('is-showing');
+      }, 3000);
+    });
+
+    // Nút chuyển ảnh tiếp theo mượt mà
+    document.getElementById('fxBtnNextPhoto').addEventListener('click', function (e) {
+      e.stopPropagation();
+      currentStoryIdx = (currentStoryIdx + 1) % PHOTO_STORIES.length;
+      renderCurrentStory(true);
     });
 
     // 3D Parallax Tilt theo di chuyển chuột
@@ -185,8 +311,8 @@
       var rect = photoModalCard.getBoundingClientRect();
       var x = e.clientX - (rect.left + rect.width / 2);
       var y = e.clientY - (rect.top + rect.height / 2);
-      var rotY = (x / (rect.width / 2)) * 14;
-      var rotX = -(y / (rect.height / 2)) * 14;
+      var rotY = (x / (rect.width / 2)) * 12;
+      var rotX = -(y / (rect.height / 2)) * 12;
       photoModalCard.style.transform = 'rotateX(' + rotX.toFixed(2) + 'deg) rotateY(' + rotY.toFixed(2) + 'deg)';
     });
 
@@ -197,16 +323,32 @@
     });
   }
 
-  function openPhotoLightbox(src, caption, originX, originY) {
+  function renderCurrentStory(withFlip) {
+    if (!photoModalCard) return;
+    var story = PHOTO_STORIES[currentStoryIdx];
+
+    if (withFlip) {
+      photoModalCard.classList.remove('is-flipping');
+      void photoModalCard.offsetWidth;
+      photoModalCard.classList.add('is-flipping');
+      playCrystalChime([783.99, 987.77, 1318.51], 0.05);
+    }
+
+    photoModalImg.src = story.src;
+    photoModalTitle.textContent = story.title;
+    photoModalNote.textContent = story.note;
+  }
+
+  function openPhotoLightbox(storyIdOrSrc, originX, originY) {
     if (!photoModalEl) createPhotoModal();
-    photoModalImg.src = src;
-    photoModalCaption.textContent = caption || 'Thư 9x ✨';
+    currentStoryIdx = getStoryIndex(storyIdOrSrc);
+    renderCurrentStory(false);
 
     photoModalEl.classList.add('is-open');
     playCrystalChime();
 
     // Nổ tim tại điểm click
-    burstHearts(originX || window.innerWidth / 2, originY || window.innerHeight / 2, 20);
+    burstHearts(originX || window.innerWidth / 2, originY || window.innerHeight / 2, 22);
   }
 
   function closePhotoLightbox() {

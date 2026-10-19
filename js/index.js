@@ -829,45 +829,45 @@
 
     function getFlyLayout() {
       var W = window.innerWidth, H = window.innerHeight;
-      var LANES, SIDE = 6;
+      var LANES, SIDE = 12;
       if (W <= H) {
-        LANES = 3;                                    // màn dọc: 3 luồng (giữ nguyên)
+        LANES = 2; // Màn dọc (điện thoại): chỉ 2 luồng để ảnh thoáng đãng, không bị chen chúc dày đặc
       } else {
-        // Màn ngang: số luồng theo tỉ lệ khung hình (16:9 → 5, siêu rộng → 6–7)
-        LANES = Math.max(4, Math.min(7, Math.round(2.8 * W / H)));
+        // Màn ngang (desktop/tablet): 3-4 luồng vừa vặn, không bị ngập tràn màn hình
+        LANES = Math.max(3, Math.min(4, Math.round(2.0 * W / H)));
       }
-      var laneW = Math.min((W - SIDE * 2) / LANES, 290);
+      var laneW = Math.min((W - SIDE * 2) / LANES, W <= H ? 190 : 255);
       return {
         W: W, H: H,
         photoW: laneW - 8,            // bề rộng tối đa của ảnh trong luồng
         lanes: LANES,
         laneW: laneW,
-        offsetX: (W - laneW * LANES) / 2, // màn rộng: 3 luồng gom về giữa
-        maxH: H * ((W > H && H <= 500) ? 0.55 : 0.36), // khớp max-height trong CSS (mobile ngang 55vh, còn lại ≤36vh)
-        speed: H / 7.5       // px/s — chung cho mọi ảnh
+        offsetX: (W - laneW * LANES) / 2, // màn rộng: các luồng gom về giữa cân đối
+        maxH: H * ((W > H && H <= 500) ? 0.52 : (W <= H ? 0.40 : 0.36)),
+        speed: H / 9.2       // Tốc độ bay êm ái, nhẹ nhàng, dễ ngắm và dễ chạm
       };
     }
 
     function launchFlyingPhoto(L, lane, url, now) {
-      // Kích thước ngẫu nhiên 76–97% luồng → ảnh to nhỏ xen kẽ, tạo chỗ cho nghiêng & lệch
-      var w = Math.round(L.photoW * (0.76 + Math.random() * 0.21));
+      // Kích thước ngẫu nhiên 80–98% luồng → ảnh to nhỏ xen kẽ tự nhiên
+      var w = Math.round(L.photoW * (0.80 + Math.random() * 0.18));
       var ratio = photoRatios[url];
-      var h = ratio ? Math.min(w * ratio, L.maxH) : L.maxH; // chưa đo được → tính theo trường hợp cao nhất
+      var h = ratio ? Math.min(w * ratio, L.maxH) : L.maxH;
 
-      // Góc nghiêng tối đa sao cho khung xoay vẫn lọt trong làn
+      // Góc nghiêng nhẹ nhàng thanh thoát
       var usable = L.laneW - 4;
-      var sinMax = Math.max(0, Math.min((usable - w) / h, Math.sin(7 * Math.PI / 180)));
-      var theta = Math.asin(sinMax) * (0.35 + Math.random() * 0.65) * (Math.random() < 0.5 ? -1 : 1);
+      var sinMax = Math.max(0, Math.min((usable - w) / h, Math.sin(6 * Math.PI / 180)));
+      var theta = Math.asin(sinMax) * (0.3 + Math.random() * 0.7) * (Math.random() < 0.5 ? -1 : 1);
       var s = Math.abs(Math.sin(theta)), c = Math.cos(theta);
-      var rw = w * c + h * s;          // bề rộng khung sau khi xoay
-      var rh = h * c + w * s;          // chiều cao khung sau khi xoay
+      var rw = w * c + h * s;
+      var rh = h * c + w * s;
       var jitter = Math.max(0, (usable - rw) / 2);
       var centerX = L.offsetX + lane * L.laneW + L.laneW / 2 + (Math.random() * 2 - 1) * jitter;
 
-      // Xuất phát ngay dưới mép màn hình, bay tới khi khuất hẳn phía trên
+      // Xuất phát dưới mép màn hình, bay lên chậm rãi
       var overhang = (rh - h) / 2;
-      var startTop = L.H + overhang + 4;
-      var rise = startTop + h + overhang + 12;
+      var startTop = L.H + overhang + 6;
+      var rise = startTop + h + overhang + 16;
       var dur = rise / L.speed;
 
       var wrap = document.createElement('div');
@@ -885,15 +885,13 @@
       img.draggable = false;
       wrap.appendChild(img);
       wrap.addEventListener('animationend', function() {
-        if (this._caught) return; // đã bắt → không xóa
+        if (this._caught) return;
         if (this.parentNode) this.parentNode.removeChild(this);
       });
       photoFloatContainer.appendChild(wrap);
 
-      // Khóa làn cho tới khi ảnh này lên đủ cao + một khoảng hở ngẫu nhiên (tránh cảm giác xếp lưới)
-      // Khoảng hở dọc thất thường: thường sát, thỉnh thoảng có khoảng thở rộng hơn
-      var gapY = 6 + Math.random() * L.H * 0.07;
-      if (Math.random() < 0.25) gapY += L.H * (0.06 + Math.random() * 0.1);
+      // Khoảng hở dọc rộng rãi, thanh thoát (giải quyết triệt để "ảnh hơi dày")
+      var gapY = L.H * (0.35 + Math.random() * 0.35);
       flyLanes[lane] = now + (rh + gapY) / L.speed * 1000;
       lastLane = lane;
     }
@@ -906,7 +904,6 @@
 
       var L = getFlyLayout();
       if (flyLanes.length !== L.lanes) {
-        // Lần đầu hoặc xoay/đổi kích thước màn hình → dựng lại làn
         flyLanes = [];
         for (var k = 0; k < L.lanes; k++) flyLanes.push(0);
         lastLane = -1;
@@ -916,14 +913,13 @@
       for (var i = 0; i < flyLanes.length; i++) if (flyLanes[i] <= now) free.push(i);
       if (!free.length) return;
 
-      // Chọn ngẫu nhiên trong các luồng trống → nhịp thả không lặp lại đều đặn
       var lane = free[(Math.random() * free.length) | 0];
 
       var urls = getFlyingUrls();
       launchFlyingPhoto(L, lane, nextUrl(urls), now);
 
-      // Nhịp nhỏ giữa các lần thả → 3 luồng so le độ cao, không xếp thành hàng ngang
-      nextSpawnAt = now + 180 + Math.random() * 520;
+      // Nhịp thả giãn cách (800ms - 1500ms) để ảnh trôi so le nghệ thuật, không chen lấn
+      nextSpawnAt = now + 850 + Math.random() * 650;
     }
 
     function startFlyingPhotos() {
@@ -940,7 +936,13 @@
       preloadFlyingPhotos();
       if (flyingInterval) clearInterval(flyingInterval);
       tickFlying();
-      flyingInterval = setInterval(tickFlying, 150);
+      flyingInterval = setInterval(tickFlying, 300);
+
+      // Hiện banner hướng dẫn chạm ảnh
+      var guideBanner = document.getElementById('photoGuideBanner');
+      if (guideBanner) {
+        guideBanner.classList.add('is-visible');
+      }
     }
     // ═══════════════════════════════════════════════════
     // ✨ THƯ FADE OUT → HOA TAN THÀNH BỤI → BÙM HẠT TRẮNG VÀNG → ẢNH BAY
