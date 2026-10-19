@@ -657,6 +657,7 @@
       if (letterContentEl) letterContentEl.innerHTML = '';
       if (letterModalFooter) letterModalFooter.style.display = 'none';
       if (letterScrollHint) letterScrollHint.classList.remove('is-visible');
+      if (letterBox) letterBox.scrollTop = 0;
       centerLetterBox(true); // đặt vị trí ban đầu ngay lập tức, không trượt
       if (letterModal) letterModal.classList.add('is-open');
 

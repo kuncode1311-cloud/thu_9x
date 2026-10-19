@@ -741,7 +741,7 @@
 
     function hideOpenPrompt() {
       if (letterOpenPrompt) {
-        letterOpenPrompt.classList.remove('is-visible');
+        letterOpenPrompt.classList.remove('is-visible', 'is-ready');
         letterOpenPrompt.classList.add('is-hidden');
       }
     }
@@ -764,13 +764,6 @@
         hideOpenPrompt();
       });
     }
-
-    // Tự động bật hiện banner mở thư sau khi bó hoa đã xuất hiện (~4s)
-    setTimeout(function () {
-      if (letterOpenPrompt && (!letterModal || !letterModal.classList.contains('is-open'))) {
-        letterOpenPrompt.classList.add('is-visible');
-      }
-    }, 4000);
 
     // Khởi tạo Dây đèn đom đóm Fairy Lights
     initFairyLights();
@@ -818,23 +811,23 @@
 
     // Lời thoại siêu cute, tự nhiên, thân thiện và dụ Thư mở thư
     var leftQuotes = [
-      "Thư ơiii! Trikun gửi tâm thư ở giữa kìa, mở xem lẹ đi! 💌✨",
-      "Đứng ngắm tui hoài à! Nhấn vô lá thư ở giữa kìa đồ ngốc ơii! 😆🌸",
-      "Bật mí nè: Trong thư ổng dặn Thư ăn nhiều cơm vô cho béo tốt á! 🍚😋",
-      "Chạm tui quài tui cù lét á! Nhấn phong bì ở giữa đi, ổng dỗi đó nha! 🤣💌",
-      "Mở thư lẹ lên Thư ơi, coi xem ổng có nói xấu gì hông nè hihi! 🌷✨",
-      "Trikun bảo đầu Thư tròn ủm xoa thích xỉu, vô đọc thư xem ổng dặn gì kìa! 🥰🐾",
-      "Hôm nay 20/10 Thư là nhất rùi đó nha! Mau mở thư khám phá đi nà! 💖🎉"
+      "Thư ơi, mở thư ở giữa xem kìa! 💌✨",
+      "Nhấn lá thư đi kìa đồ ngốc ơi! 😆🌸",
+      "Trong thư có dặn ăn nhiều cơm á! 🍚😋",
+      "Chạm phong bì đi, ổng dỗi đó nha! 🤣💌",
+      "Mở xem ổng có nói xấu gì hông nè! 🌷✨",
+      "Đầu tròn ủm ơi, mở thư lẹ đi! 🥰🐾",
+      "20/10 Thư là nhất! Mở quà nà! 💖🎉"
     ];
 
     var rightQuotes = [
-      "Chạm vô lá thư màu hồng đi Thư ơiii, có bất ngờ xịn lắm á! 👇💖",
-      "Ai mở thư là ngoan ngoãn đứng yên cho Trikun xoa đầu tròn ủm nha! 🥰✨",
-      "Bật mí: Đọc thư xong là có tuyệt chiêu ảnh bay đẹp xỉu luôn á! 📸💐",
-      "Thư hổng mở là tui mở tui đọc trước ráng chịu à nha! 😜💌",
-      "20/10 chúc Thư xinh đẹp, học giỏi mà nhớ rủ ổng đi chơi nhiều vô đó! 🧀🌷",
-      "Tui là đệ tử ruột của Trikundepzaicute nè, mau chạm phong bì đi Thư! 🐾✨",
-      "Nghe đồn bức thư này ổng viết nắn nót cả buổi á, hổng đọc là uổng lắm! 🥺💕"
+      "Chạm lá thư hồng đi Thư ơiii! 👇💖",
+      "Mở thư là bị Trikun xoa đầu á! 🥰✨",
+      "Đọc xong có ảnh bay đẹp xỉu luôn! 📸💐",
+      "Hổng mở là tui đọc trước á nha! 😜💌",
+      "Nhớ rủ ổng đi chơi nhiều vô đó! 🧀🌷",
+      "Bức thư này ổng viết nắn nót lắm á! 🥺💕",
+      "Mau chạm phong bì đi Thư ơi! 🐾✨"
     ];
 
     var leftIdx = 0, rightIdx = 0;
@@ -855,7 +848,7 @@
             catEl.classList.remove('has-bubble-open');
           }
         }, 350);
-      }, durationMs || 4800);
+      }, durationMs || 4000);
     }
 
     function hideAllBubbles() {
@@ -887,10 +880,10 @@
 
       if (catEl === leftCat) {
         if (timerL) clearTimeout(timerL);
-        timerL = showBubble(catEl, bubbleEl, quote, 4800);
+        timerL = showBubble(catEl, bubbleEl, quote, 4000);
       } else {
         if (timerR) clearTimeout(timerR);
-        timerR = showBubble(catEl, bubbleEl, quote, 4800);
+        timerR = showBubble(catEl, bubbleEl, quote, 4000);
       }
     }
 
@@ -922,37 +915,77 @@
     function onLetterClosed() {
       setTimeout(function () {
         if (leftCat && leftBubble) {
-          showBubble(leftCat, leftBubble, "Đọc thư xong rùi hả Thư? Chạm tụi tui chơi nha! 🐰💕", 4500);
+          showBubble(leftCat, leftBubble, "Đọc thư xong rùi hả Thư ơi? 🐰💕", 3800);
         }
         setTimeout(function () {
           if (rightCat && rightBubble) {
-            showBubble(rightCat, rightBubble, "Nhớ lời ổng dặn: ăn nhiều cơm với cho xoa đầu nghen! 🥰🍚", 4500);
+            showBubble(rightCat, rightBubble, "Nhớ ăn nhiều cơm cho phúng phính nha! 🥰🍚", 3800);
           }
-        }, 2200);
+        }, 2000);
       }, 700);
     }
 
     if (letterCloseBtn) letterCloseBtn.addEventListener('click', onLetterClosed);
     if (letterBtnContinue) letterBtnContinue.addEventListener('click', onLetterClosed);
 
-    // TỰ ĐỘNG DỤ THƯ MỞ THƯ THEO KỊCH BẢN THÂN THIỆN
-    // Sau khi hoa và thư xuất hiện (~4.5s): Thỏ trái cất tiếng gọi
-    setTimeout(function () {
-      if (leftCat && leftBubble && (!letterModal || !letterModal.classList.contains('is-open'))) {
-        playCrystalChime([880, 1108.73], 0.04);
-        timerL = showBubble(leftCat, leftBubble, leftQuotes[0], 4200);
-        leftIdx++;
-      }
-    }, 4500);
+    // TỰ ĐỘNG HIỆN BANNER & DỤ THƯ MỞ THƯ THEO KỊCH BẢN THÂN THIỆN
+    // Chỉ kích hoạt sau khi intro câu chúc đã kết thúc êm ái
+    var introEl = document.getElementById('intro');
+    var letterOpenPrompt = document.getElementById('letterOpenPrompt');
+    var sequenceStarted = false;
 
-    // 4.5 giây sau (~9s), thỏ phải chêm lời dụ Thư chạm lá thư
-    setTimeout(function () {
-      if (rightCat && rightBubble && (!letterModal || !letterModal.classList.contains('is-open'))) {
-        playCrystalChime([1108.73, 1318.51], 0.04);
-        timerR = showBubble(rightCat, rightBubble, rightQuotes[0], 4500);
-        rightIdx++;
+    function startSequenceAfterIntro() {
+      if (sequenceStarted) return;
+      sequenceStarted = true;
+
+      // 1. Sau khi intro kết thúc 1.2s: Hiện banner mở thư với hiệu ứng sáng
+      setTimeout(function () {
+        if (letterOpenPrompt && (!letterModal || !letterModal.classList.contains('is-open'))) {
+          letterOpenPrompt.classList.add('is-ready', 'is-visible');
+        }
+      }, 1200);
+
+      // 2. Sau thêm 2.2s (~3.4s sau intro): Bé thỏ trái cất tiếng gọi thân thiện
+      setTimeout(function () {
+        if (leftCat && leftBubble && (!letterModal || !letterModal.classList.contains('is-open'))) {
+          playCrystalChime([880, 1108.73], 0.04);
+          timerL = showBubble(leftCat, leftBubble, leftQuotes[0], 4000);
+          leftIdx++;
+        }
+      }, 3400);
+
+      // 3. Sau thêm 5s (~8.4s sau intro): Bé thỏ phải nhắc nhở cute nếu chưa mở
+      setTimeout(function () {
+        if (rightCat && rightBubble && (!letterModal || !letterModal.classList.contains('is-open'))) {
+          playCrystalChime([1108.73, 1318.51], 0.04);
+          timerR = showBubble(rightCat, rightBubble, rightQuotes[0], 4000);
+          rightIdx++;
+        }
+      }, 8400);
+    }
+
+    if (introEl) {
+      if (introEl.classList.contains('is-done')) {
+        startSequenceAfterIntro();
+      } else {
+        var introObserver = new MutationObserver(function () {
+          if (introEl.classList.contains('is-done')) {
+            introObserver.disconnect();
+            startSequenceAfterIntro();
+          }
+        });
+        introObserver.observe(introEl, { attributes: true, attributeFilter: ['class'] });
+
+        // Fallback an toàn nếu sau 8.5s chưa nhận observer
+        setTimeout(function () {
+          if (!document.body.classList.contains('not-loaded')) {
+            startSequenceAfterIntro();
+          }
+        }, 8500);
       }
-    }, 9000);
+    } else {
+      setTimeout(startSequenceAfterIntro, 2000);
+    }
   }
 
   // --- L. TƯƠNG TÁC CHẠM VÀO TỪNG BÔNG HOA TULIP ---

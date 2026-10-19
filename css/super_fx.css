@@ -561,9 +561,7 @@ body:has(.fx-photo-modal.is-open) .photo-guide-banner {
   white-space: nowrap;
 }
 
-.letter--visible ~ .letter-open-prompt,
-body:has(.letter--visible) .letter-open-prompt,
-.letter-open-prompt.is-visible {
+.letter-open-prompt.is-visible.is-ready {
   opacity: 1;
   pointer-events: auto;
   transform: translateX(-50%) translateY(0);
@@ -658,13 +656,18 @@ body:has(.letter--visible) .letter-open-prompt,
   60% { transform: translate(-50%, -50%) scale(1); }
 }
 
-/* Ẩn chỉ dẫn khi thư đã mở */
+/* Nghiêm ngặt ẩn chỉ dẫn mở thư khi chưa sẵn sàng, intro đang chạy hoặc thư đã mở */
+body.not-loaded .letter-open-prompt,
+body:has(#intro:not(.is-done)) .letter-open-prompt,
+#intro:not(.is-done) ~ .letter-open-prompt,
+.letter-open-prompt:not(.is-ready),
 .letter-modal.is-open ~ .letter-open-prompt,
 body:has(.letter-modal.is-open) .letter-open-prompt,
 .letter.is-opened ~ .letter-open-prompt,
 .letter-open-prompt.is-hidden {
   opacity: 0 !important;
   pointer-events: none !important;
+  visibility: hidden !important;
   transform: translateX(-50%) translateY(20px) !important;
 }
 
@@ -801,105 +804,109 @@ body:not(.not-loaded) .bouquet-dreamy-glow {
 /* Bong bóng thoại cao cấp, siêu nét và cute */
 .rabbit-bubble {
   position: absolute;
-  bottom: calc(100% + 14px);
+  bottom: calc(100% + 12px);
   width: max-content;
-  max-width: clamp(190px, 42vw, 250px);
-  background: linear-gradient(135deg, #ffffff 0%, #fff5f8 100%);
-  border: 2px solid #f472b6;
-  border-radius: 18px;
-  padding: 10px 14px;
+  max-width: clamp(140px, 35vw, 175px);
+  background: rgba(255, 255, 255, 0.97);
+  border: 1.8px solid #f472b6;
+  border-radius: 16px;
+  padding: 8px 12px;
   box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.35),
-    0 0 20px rgba(244, 114, 182, 0.45);
+    0 8px 25px rgba(0, 0, 0, 0.3),
+    0 0 16px rgba(244, 114, 182, 0.45);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   opacity: 0;
   pointer-events: none;
-  transform: scale(0.7) translateY(10px);
+  transform: translateX(-50%) scale(0.7) translateY(8px);
   transform-origin: bottom center;
   transition: opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 25;
+  z-index: 1060;
 }
 
 .rabbit-bubble--left {
-  left: -8px;
-  transform-origin: bottom left;
+  left: 50%;
+  transform-origin: bottom center;
 }
 
 .rabbit-bubble--right {
-  right: -8px;
-  left: auto;
-  transform-origin: bottom right;
+  left: 50%;
+  transform-origin: bottom center;
 }
 
-/* Đuôi nhọn của bóng thoại chỉ vào đầu bé thỏ */
+/* Đuôi nhọn của bóng thoại chỉ ngay vào giữa đầu bé thỏ */
 .rabbit-bubble::after {
   content: '';
   position: absolute;
   bottom: -8px;
-  border-width: 8px 8px 0;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px 7px 0;
   border-style: solid;
   border-color: #f472b6 transparent transparent;
   display: block;
   width: 0;
 }
 
-.rabbit-bubble--left::after {
-  left: 28px;
-}
-
+.rabbit-bubble--left::after,
 .rabbit-bubble--right::after {
-  right: 28px;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
 }
 
 .rabbit-bubble::before {
   content: '';
   position: absolute;
   bottom: -5.5px;
-  border-width: 6.5px 6.5px 0;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6.5px 5.5px 0;
   border-style: solid;
-  border-color: #fff5f8 transparent transparent;
+  border-color: #ffffff transparent transparent;
   display: block;
   width: 0;
   z-index: 1;
 }
 
-.rabbit-bubble--left::before {
-  left: 29.5px;
-}
-
+.rabbit-bubble--left::before,
 .rabbit-bubble--right::before {
-  right: 29.5px;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
 }
 
 .rabbit-bubble.is-visible {
   opacity: 1;
   pointer-events: auto;
-  transform: scale(1) translateY(0);
+  transform: translateX(-50%) scale(1) translateY(0);
   animation: bubbleGentleFloat 2.4s ease-in-out infinite alternate;
 }
 
 @keyframes bubbleGentleFloat {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-4px); }
+  0% { transform: translateX(-50%) translateY(0); }
+  100% { transform: translateX(-50%) translateY(-5px); }
 }
 
 .rabbit-bubble .bubble-text {
   display: block;
   font-family: 'Comfortaa', 'Outfit', system-ui, sans-serif;
-  font-size: clamp(12px, 3.2vw, 13.5px);
+  font-size: clamp(11.5px, 3.1vw, 13px);
   font-weight: 700;
-  line-height: 1.45;
+  line-height: 1.42;
   color: #831843; /* Đỏ mận berry đậm cực kỳ sắc nét trên nền trắng ngà */
   text-align: center;
   word-break: break-word;
 }
 
-/* Ẩn bong bóng thoại khi mở modal xem thư */
+/* Ẩn bong bóng thoại khi mở modal xem thư HOẶC khi trang chưa tải / intro đang chạy */
+body.not-loaded .rabbit-bubble,
+body:has(#intro:not(.is-done)) .rabbit-bubble,
+#intro:not(.is-done) ~ * .rabbit-bubble,
 .letter-modal.is-open ~ .ramo .rabbit-bubble,
 body:has(.letter-modal.is-open) .rabbit-bubble {
   opacity: 0 !important;
   pointer-events: none !important;
-  transform: scale(0.7) translateY(10px) !important;
+  transform: translateX(-50%) scale(0.7) translateY(10px) !important;
 }
 
