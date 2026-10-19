@@ -480,12 +480,20 @@
           </g>
         </svg>
       </div>
-      <!-- Con thỏ đặt cạnh bó hoa -->
-      <div class="rabbit rabbit--left">
-        <img src="./assets/images/mewmew.gif" alt="Con thỏ trái">
+      <!-- Con thỏ đặt cạnh bó hoa - Có thể chạm vào để trò chuyện & dụ Thư mở thư -->
+      <div class="rabbit rabbit--left" id="rabbitLeft" role="button" tabindex="0" aria-label="Bé thỏ trái gọi Thư">
+        <span class="rabbit-badge">Chạm tui nè 🐾</span>
+        <div class="rabbit-bubble rabbit-bubble--left" id="rabbitBubbleLeft">
+          <span class="bubble-text">Thư ơiii! Trikun gửi thư kìa, mở xem lẹ đi! 💌</span>
+        </div>
+        <img src="./assets/images/mewmew.gif" alt="Bé thỏ trái">
       </div>
-      <div class="rabbit rabbit--right">
-        <img src="./assets/images/mewmew.gif" alt="Con thỏ phải">
+      <div class="rabbit rabbit--right" id="rabbitRight" role="button" tabindex="0" aria-label="Bé thỏ phải gọi Thư">
+        <span class="rabbit-badge">Chạm tui nè 🐾</span>
+        <div class="rabbit-bubble rabbit-bubble--right" id="rabbitBubbleRight">
+          <span class="bubble-text">Chạm vô phong bì ở giữa đi nè Thư ơii! 👇✨</span>
+        </div>
+        <img src="./assets/images/mewmew.gif" alt="Bé thỏ phải">
       </div>
     </div>
     <!-- Nơ buộc bó hoa (đặt ngoài .ramo với z-index cao hơn để che gốc hoa) -->

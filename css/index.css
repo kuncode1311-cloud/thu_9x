@@ -2413,9 +2413,9 @@
   /* CSS cho con thỏ */
   .rabbit {
     position: absolute;
-    width: 105px;
+    width: clamp(96px, 14.5vmin, 125px);
     height: auto;
-    z-index: 5;
+    z-index: 1005;
     opacity: 0;
     transition: opacity 1.2s cubic-bezier(.4,0,.2,1);
     animation: rabbit-float 3s ease-in-out infinite;
@@ -2429,12 +2429,15 @@
     width: 100%;
     height: auto;
     display: block;
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: none;
   }
   
   /* Đặt con thỏ ở bên phải bó hoa & lật ngang hướng mặt vào giữa */
   .rabbit--right {
-    right: -24px;
-    bottom: 22px;
+    right: clamp(-36px, -4vmin, -16px);
+    bottom: clamp(55px, 10.5vmin, 90px);
   }
 
   .rabbit--right img {
@@ -2443,8 +2446,8 @@
   
   /* Đặt con thỏ ở bên trái bó hoa */
   .rabbit--left {
-    left: -24px;
-    bottom: 22px;
+    left: clamp(-36px, -4vmin, -16px);
+    bottom: clamp(55px, 10.5vmin, 90px);
   }
   
   /* Animation nhẹ nhàng cho con thỏ */

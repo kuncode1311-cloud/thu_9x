@@ -664,22 +664,153 @@
     });
   }
 
-  // --- K. TƯƠNG TÁC 2 CHÚ MÈO MEWMEW DỄ THƯƠNG ---
+  // --- K. TƯƠNG TÁC 2 CHÚ THỎ MEWMEW DỄ THƯƠNG & DỤ MỞ THƯ ---
   function initCatInteractions() {
-    var cats = document.querySelectorAll('.rabbit');
-    cats.forEach(function (cat) {
-      cat.style.cursor = 'pointer';
-      cat.addEventListener('click', function (e) {
-        e.stopPropagation();
-        playCrystalChime([880, 1108.73, 1318.51], 0.05); // high cute chime
-        var rect = cat.getBoundingClientRect();
-        burstHearts(rect.left + rect.width / 2, rect.top, 10);
+    var leftCat = document.getElementById('rabbitLeft');
+    var rightCat = document.getElementById('rabbitRight');
+    var leftBubble = document.getElementById('rabbitBubbleLeft');
+    var rightBubble = document.getElementById('rabbitBubbleRight');
+    var letterModal = document.getElementById('letterModal');
+    var letterCloseBtn = document.getElementById('letterClose');
+    var letterBtnContinue = document.getElementById('letterBtnContinue');
 
-        cat.classList.remove('is-jumping');
-        void cat.offsetWidth; // reset anim
-        cat.classList.add('is-jumping');
+    // Lời thoại siêu cute, tự nhiên, thân thiện và dụ Thư mở thư
+    var leftQuotes = [
+      "Thư ơiii! Trikun gửi tâm thư ở giữa kìa, mở xem lẹ đi! 💌✨",
+      "Đứng ngắm tui hoài à! Nhấn vô lá thư ở giữa kìa đồ ngốc ơii! 😆🌸",
+      "Bật mí nè: Trong thư ổng dặn Thư ăn nhiều cơm vô cho béo tốt á! 🍚😋",
+      "Chạm tui quài tui cù lét á! Nhấn phong bì ở giữa đi, ổng dỗi đó nha! 🤣💌",
+      "Mở thư lẹ lên Thư ơi, coi xem ổng có nói xấu gì hông nè hihi! 🌷✨",
+      "Trikun bảo đầu Thư tròn ủm xoa thích xỉu, vô đọc thư xem ổng dặn gì kìa! 🥰🐾",
+      "Hôm nay 20/10 Thư là nhất rùi đó nha! Mau mở thư khám phá đi nà! 💖🎉"
+    ];
+
+    var rightQuotes = [
+      "Chạm vô lá thư màu hồng đi Thư ơiii, có bất ngờ xịn lắm á! 👇💖",
+      "Ai mở thư là ngoan ngoãn đứng yên cho Trikun xoa đầu tròn ủm nha! 🥰✨",
+      "Bật mí: Đọc thư xong là có tuyệt chiêu ảnh bay đẹp xỉu luôn á! 📸💐",
+      "Thư hổng mở là tui mở tui đọc trước ráng chịu à nha! 😜💌",
+      "20/10 chúc Thư xinh đẹp, học giỏi mà nhớ rủ ổng đi chơi nhiều vô đó! 🧀🌷",
+      "Tui là đệ tử ruột của Trikundepzaicute nè, mau chạm phong bì đi Thư! 🐾✨",
+      "Nghe đồn bức thư này ổng viết nắn nót cả buổi á, hổng đọc là uổng lắm! 🥺💕"
+    ];
+
+    var leftIdx = 0, rightIdx = 0;
+    var timerL = null, timerR = null;
+
+    function showBubble(catEl, bubbleEl, quote, durationMs) {
+      if (!catEl || !bubbleEl) return;
+      var textEl = bubbleEl.querySelector('.bubble-text') || bubbleEl;
+      textEl.textContent = quote;
+
+      catEl.classList.add('has-bubble-open');
+      bubbleEl.classList.add('is-visible');
+
+      return setTimeout(function () {
+        bubbleEl.classList.remove('is-visible');
+        setTimeout(function () {
+          if (!bubbleEl.classList.contains('is-visible')) {
+            catEl.classList.remove('has-bubble-open');
+          }
+        }, 350);
+      }, durationMs || 4800);
+    }
+
+    function hideAllBubbles() {
+      if (timerL) clearTimeout(timerL);
+      if (timerR) clearTimeout(timerR);
+      if (leftBubble) leftBubble.classList.remove('is-visible');
+      if (rightBubble) rightBubble.classList.remove('is-visible');
+      if (leftCat) leftCat.classList.remove('has-bubble-open');
+      if (rightCat) rightCat.classList.remove('has-bubble-open');
+    }
+
+    function triggerRabbit(catEl, bubbleEl, quotes, getIdx, setIdx) {
+      if (!catEl) return;
+      // Âm thanh chimes cute vui tai
+      playCrystalChime([880, 1108.73, 1318.51, 1760], 0.08);
+
+      // Nhảy tưng tưng
+      catEl.classList.remove('is-jumping');
+      void catEl.offsetWidth;
+      catEl.classList.add('is-jumping');
+
+      // Nổ tim mini từ chú thỏ
+      var rect = catEl.getBoundingClientRect();
+      burstHearts(rect.left + rect.width / 2, rect.top, 10);
+
+      // Hiện câu thoại mới nhất
+      var quote = quotes[getIdx() % quotes.length];
+      setIdx(getIdx() + 1);
+
+      if (catEl === leftCat) {
+        if (timerL) clearTimeout(timerL);
+        timerL = showBubble(catEl, bubbleEl, quote, 4800);
+      } else {
+        if (timerR) clearTimeout(timerR);
+        timerR = showBubble(catEl, bubbleEl, quote, 4800);
+      }
+    }
+
+    if (leftCat) {
+      leftCat.addEventListener('click', function (e) {
+        e.stopPropagation();
+        triggerRabbit(leftCat, leftBubble, leftQuotes, function () { return leftIdx; }, function (v) { leftIdx = v; });
       });
-    });
+    }
+
+    if (rightCat) {
+      rightCat.addEventListener('click', function (e) {
+        e.stopPropagation();
+        triggerRabbit(rightCat, rightBubble, rightQuotes, function () { return rightIdx; }, function (v) { rightIdx = v; });
+      });
+    }
+
+    // Ẩn bóng thoại thỏ khi thư mở
+    var letterEl = document.querySelector('.letter');
+    if (letterEl) {
+      letterEl.addEventListener('click', hideAllBubbles);
+    }
+    var letterPrompt = document.getElementById('letterOpenPrompt');
+    if (letterPrompt) {
+      letterPrompt.addEventListener('click', hideAllBubbles);
+    }
+
+    // Khi đóng thư hoặc bấm tiếp tục: Thỏ chúc mừng
+    function onLetterClosed() {
+      setTimeout(function () {
+        if (leftCat && leftBubble) {
+          showBubble(leftCat, leftBubble, "Đọc thư xong rùi hả Thư? Chạm tụi tui chơi nha! 🐰💕", 4500);
+        }
+        setTimeout(function () {
+          if (rightCat && rightBubble) {
+            showBubble(rightCat, rightBubble, "Nhớ lời ổng dặn: ăn nhiều cơm với cho xoa đầu nghen! 🥰🍚", 4500);
+          }
+        }, 2200);
+      }, 700);
+    }
+
+    if (letterCloseBtn) letterCloseBtn.addEventListener('click', onLetterClosed);
+    if (letterBtnContinue) letterBtnContinue.addEventListener('click', onLetterClosed);
+
+    // TỰ ĐỘNG DỤ THƯ MỞ THƯ THEO KỊCH BẢN THÂN THIỆN
+    // Sau khi hoa và thư xuất hiện (~4.5s): Thỏ trái cất tiếng gọi
+    setTimeout(function () {
+      if (leftCat && leftBubble && (!letterModal || !letterModal.classList.contains('is-open'))) {
+        playCrystalChime([880, 1108.73], 0.04);
+        timerL = showBubble(leftCat, leftBubble, leftQuotes[0], 4200);
+        leftIdx++;
+      }
+    }, 4500);
+
+    // 4.5 giây sau (~9s), thỏ phải chêm lời dụ Thư chạm lá thư
+    setTimeout(function () {
+      if (rightCat && rightBubble && (!letterModal || !letterModal.classList.contains('is-open'))) {
+        playCrystalChime([1108.73, 1318.51], 0.04);
+        timerR = showBubble(rightCat, rightBubble, rightQuotes[0], 4500);
+        rightIdx++;
+      }
+    }, 9000);
   }
 
   // --- L. TƯƠNG TÁC CHẠM VÀO TỪNG BÔNG HOA TULIP ---

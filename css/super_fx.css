@@ -547,23 +547,163 @@ body:not(.not-loaded) .bouquet-dreamy-glow {
   }
 }
 
-/* --- 10. TƯƠNG TÁC NHẢY NHÓT CHO 2 CHÚ MÈO MEWMEW --- */
+/* --- 10. TƯƠNG TÁC DỄ THƯƠNG & BONG BÓNG THOẠI 2 BÉ THỎ --- */
 .rabbit {
   cursor: pointer !important;
   pointer-events: auto !important;
-  transition: transform 0.25s ease, filter 0.25s ease;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
 }
 
 .rabbit:hover {
-  transform: scale(1.15) !important;
-  filter: drop-shadow(0 0 12px rgba(255, 182, 193, 0.85));
+  transform: scale(1.12) !important;
+  filter: drop-shadow(0 0 16px rgba(255, 182, 193, 0.95)) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
 }
 
 .rabbit.is-jumping {
-  animation: rabbitJump 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) !important;
+  animation: rabbitJump 0.65s cubic-bezier(0.2, 0.85, 0.3, 1.2) !important;
 }
 
 @keyframes rabbitJump {
   0%, 100% { transform: translateY(0) scale(1); }
-  40% { transform: translateY(-24px) scale(1.22); }
+  35% { transform: translateY(-30px) scale(1.22) rotate(4deg); }
+  65% { transform: translateY(-10px) scale(1.08) rotate(-2deg); }
 }
+
+/* Badge chỉ dẫn "Chạm tui nè 🐾" lắc lư trên tai thỏ */
+.rabbit-badge {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1.6px solid #f472b6;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-family: 'Comfortaa', 'Outfit', sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #be185d;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 0 10px rgba(244, 114, 182, 0.5);
+  pointer-events: none;
+  z-index: 10;
+  animation: badgeBreathe 1.8s ease-in-out infinite alternate;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+@keyframes badgeBreathe {
+  0% { transform: translateX(-50%) translateY(0) scale(0.96); }
+  100% { transform: translateX(-50%) translateY(-5px) scale(1.04); }
+}
+
+/* Khi bong bóng thoại hiện ra thì ẩn nhẹ badge để không bị đè */
+.rabbit.has-bubble-open .rabbit-badge {
+  opacity: 0;
+  transform: translateX(-50%) scale(0.7);
+}
+
+/* Bong bóng thoại cao cấp, siêu nét và cute */
+.rabbit-bubble {
+  position: absolute;
+  bottom: calc(100% + 14px);
+  width: max-content;
+  max-width: clamp(190px, 42vw, 250px);
+  background: linear-gradient(135deg, #ffffff 0%, #fff5f8 100%);
+  border: 2px solid #f472b6;
+  border-radius: 18px;
+  padding: 10px 14px;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.35),
+    0 0 20px rgba(244, 114, 182, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.7) translateY(10px);
+  transform-origin: bottom center;
+  transition: opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 25;
+}
+
+.rabbit-bubble--left {
+  left: -8px;
+  transform-origin: bottom left;
+}
+
+.rabbit-bubble--right {
+  right: -8px;
+  left: auto;
+  transform-origin: bottom right;
+}
+
+/* Đuôi nhọn của bóng thoại chỉ vào đầu bé thỏ */
+.rabbit-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  border-width: 8px 8px 0;
+  border-style: solid;
+  border-color: #f472b6 transparent transparent;
+  display: block;
+  width: 0;
+}
+
+.rabbit-bubble--left::after {
+  left: 28px;
+}
+
+.rabbit-bubble--right::after {
+  right: 28px;
+}
+
+.rabbit-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -5.5px;
+  border-width: 6.5px 6.5px 0;
+  border-style: solid;
+  border-color: #fff5f8 transparent transparent;
+  display: block;
+  width: 0;
+  z-index: 1;
+}
+
+.rabbit-bubble--left::before {
+  left: 29.5px;
+}
+
+.rabbit-bubble--right::before {
+  right: 29.5px;
+}
+
+.rabbit-bubble.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1) translateY(0);
+  animation: bubbleGentleFloat 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes bubbleGentleFloat {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+.rabbit-bubble .bubble-text {
+  display: block;
+  font-family: 'Comfortaa', 'Outfit', system-ui, sans-serif;
+  font-size: clamp(12px, 3.2vw, 13.5px);
+  font-weight: 700;
+  line-height: 1.45;
+  color: #831843; /* Đỏ mận berry đậm cực kỳ sắc nét trên nền trắng ngà */
+  text-align: center;
+  word-break: break-word;
+}
+
+/* Ẩn bong bóng thoại khi mở modal xem thư */
+.letter-modal.is-open ~ .ramo .rabbit-bubble,
+body:has(.letter-modal.is-open) .rabbit-bubble {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: scale(0.7) translateY(10px) !important;
+}
+
