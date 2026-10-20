@@ -103,11 +103,11 @@
       id: 5,
       match: "thu_5",
       src: "./assets/img/thu_5.jpg",
-      title: "Đầu tròn ủm cưng ghê 🥰",
-      sticker: "🥰 Cho xoa đầu nha",
+      title: "Nét cười cưng xỉu 🥰",
+      sticker: "🥰 Dễ thương quá nè",
       stamp: "✨",
       washi: "linear-gradient(135deg, #fecdd3, #fda4af)",
-      note: "Cái đầu tròn tròn này sinh ra là để cho Trikun xoa đầu á! Đứng yên cho xoa đầu hổng được né nghe chưa!"
+      note: "Nụ cười hồn nhiên, đáng yêu thế này thì ai nhìn cũng thấy tan chảy! Lúc nào cũng phải vui vẻ, rạng rỡ như vậy nha Thư!"
     },
     {
       id: 6,
@@ -804,13 +804,13 @@
       "Trong thư có dặn ăn nhiều cơm á! 🍚😋",
       "Chạm phong bì đi, ổng dỗi đó nha! 🤣💌",
       "Mở xem ổng có nói xấu gì hông nè! 🌷✨",
-      "Đầu tròn ủm ơi, mở thư lẹ đi! 🥰🐾",
+      "Thư 9x ơi, mở thư lẹ đi nè! 🥰🐾",
       "20/10 Thư là nhất! Mở quà nà! 💖🎉"
     ];
 
     var rightQuotes = [
       "Chạm lá thư hồng đi Thư ơiii! 👇💖",
-      "Mở thư là bị Trikun xoa đầu á! 🥰✨",
+      "Mở thư xem Trikun gửi gì nè! 💌✨",
       "Đọc xong có ảnh bay đẹp xỉu luôn! 📸💐",
       "Hổng mở là tui đọc trước á nha! 😜💌",
       "Nhớ rủ ổng đi chơi nhiều vô đó! 🧀🌷",
