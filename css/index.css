@@ -3211,8 +3211,7 @@
     position: absolute;
     bottom: -20%;
     width: min(calc((100vw - 32px) / 3), 280px);
-    max-height: 36vh;
-    border-radius: 7px;
+    border-radius: 14px;
     animation: photoRise linear forwards;
     pointer-events: auto;
     touch-action: none;
@@ -3328,13 +3327,9 @@
     z-index: 1;
     width: 100%;
     height: auto;
-    max-height: 36vh;
     object-fit: cover;
     display: block;
-    border-radius: 6px;
-    box-shadow: 
-      0 0 6px rgba(255, 255, 255, 0.7),
-      0 8px 24px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
   }
   /* Quãng bay (--rise) và góc nghiêng do JS tính theo làn → mọi ảnh cùng tốc độ, không đuổi kịp nhau */
   @keyframes photoRise {

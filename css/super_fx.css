@@ -11,13 +11,16 @@
 }
 
 .photo-float {
-  /* Khung thẻ ảnh polaroid cao cấp */
+  /* Khung thẻ ảnh polaroid cao cấp chuẩn tỉ lệ 100% không tràn viền */
   background: #ffffff !important;
-  padding: 8px 8px 30px 8px !important;
-  border-radius: 12px !important;
+  padding: 10px 10px 42px 10px !important;
+  border-radius: 14px !important;
+  box-sizing: border-box !important;
+  max-height: none !important;
+  height: auto !important;
   box-shadow: 
-    0 14px 35px rgba(0, 0, 0, 0.42),
-    0 0 20px rgba(255, 182, 193, 0.45) !important;
+    0 14px 38px rgba(0, 0, 0, 0.42),
+    0 0 22px rgba(255, 182, 193, 0.45) !important;
   cursor: pointer !important;
   /* CHÚ Ý: KHÔNG gán transition transform ở đây để keyframe bay photoRise mượt tuyệt đối */
   transition: box-shadow 0.25s ease !important;
@@ -34,18 +37,21 @@
 }
 
 .photo-float img {
-  border-radius: 7px !important;
+  border-radius: 8px !important;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
   display: block !important;
   width: 100% !important;
   height: auto !important;
-  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.25s ease !important;
-  will-change: transform;
+  aspect-ratio: 1 / 1.18 !important;
+  object-fit: cover !important;
+  object-position: center 20% !important;
+  box-sizing: border-box !important;
+  background: #fdf2f8 !important;
+  transition: filter 0.25s ease !important;
 }
 
-/* Khi rê chuột: Ảnh bên trong nhấc nhẹ êm ái, 100% KHÔNG BAO GIỜ bị giật chớp */
+/* Khi rê chuột: Tăng độ sáng và tương phản ngọt ngào, TUYỆT ĐỐI KHÔNG scale để tránh ảnh tràn viền */
 .photo-float:hover img {
-  transform: scale(1.04) !important;
   filter: brightness(1.08) contrast(1.02) !important;
 }
 
@@ -136,26 +142,26 @@
   pointer-events: none;
 }
 
-/* Con tem trái tim ở góc ảnh */
+/* Con tem trái tim ở góc trên ảnh */
 .photo-float-stamp {
   position: absolute;
-  top: 6px;
-  right: 6px;
+  top: 15px;
+  right: 15px;
   font-size: 15px;
   pointer-events: none;
   z-index: 10;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
-/* Huy hiệu nhắc chạm "Chạm xem nè 💖" */
+/* Huy hiệu nhắc chạm "Chạm xem nè 💖" đặt góc dưới trong bức ảnh */
 .photo-tap-pill {
   position: absolute;
-  bottom: 30px;
-  right: 6px;
+  bottom: 50px;
+  right: 14px;
   background: rgba(255, 255, 255, 0.95);
   border: 1.4px solid #f472b6;
   border-radius: 999px;
-  padding: 2px 8px;
+  padding: 2.5px 8px;
   font-family: 'Comfortaa', sans-serif;
   font-size: 10.5px;
   font-weight: 700;
@@ -167,10 +173,10 @@
   animation: badgeBreathe 1.8s ease-in-out infinite alternate;
 }
 
-/* Nhãn sticker tình cảm ở mép dưới ảnh */
+/* Nhãn sticker tình cảm nằm ngay ngắn giữa dải viền trắng dưới đáy ảnh */
 .photo-float-label {
   position: absolute;
-  bottom: 6px;
+  bottom: 11px;
   left: 0;
   width: 100%;
   text-align: center;
@@ -183,9 +189,10 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 0 8px;
+  padding: 0 10px;
   box-sizing: border-box;
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
+  z-index: 10;
 }
 
 /* Vệt sáng quét lấp lánh (Shimmer) */
