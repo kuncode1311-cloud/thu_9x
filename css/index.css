@@ -1446,6 +1446,8 @@
     pointer-events: none;
     z-index: 3;
     overflow: hidden;
+    contain: strict;
+    isolation: isolate;
   }
   .particle {
     position: absolute;
@@ -1453,6 +1455,7 @@
     width: 0.7vmin;
     height: 0.7vmin;
     border-radius: 50%;
+    will-change: transform, opacity;
     /* Gradient tâm sáng trắng ấm tỏa sang vàng hoàng kim hổ phách 3D */
     background: radial-gradient(circle at 35% 35%, #ffffff 12%, #fef08a 38%, #facc15 70%, #ca8a04 100%);
     /* Hào quang vàng kim hoàng gia phát sáng lung linh */
@@ -3336,14 +3339,14 @@
   /* Quãng bay (--rise) và góc nghiêng do JS tính theo làn → mọi ảnh cùng tốc độ, không đuổi kịp nhau */
   @keyframes photoRise {
     0% {
-      transform: translateY(0) rotate(var(--float-rotate, 0deg));
+      transform: translate3d(0, 0, 0) rotate(var(--float-rotate, 0deg));
       opacity: 1;
     }
     86% {
       opacity: 1;
     }
     100% {
-      transform: translateY(var(--rise, -120vh)) rotate(var(--float-rotate, 0deg));
+      transform: translate3d(0, var(--rise, -120vh), 0) rotate(var(--float-rotate, 0deg));
       opacity: 0;
     }
   }

@@ -215,9 +215,6 @@
   var photoModalTitle = null;
   var photoModalNote = null;
   var currentStoryIdx = 0;
-  var patCounter = 0;
-  var patToastTimer = null;
-
   function createPhotoModal() {
     photoModalEl = document.createElement('div');
     photoModalEl.className = 'fx-photo-modal';
@@ -232,11 +229,6 @@
       '    </div>',
       '  </div>',
       '  <div class="fx-photo-actions">',
-      '    <button type="button" class="fx-btn-action fx-btn-pat" id="fxBtnPatHead" aria-label="Xoa đầu Thư">',
-      '      <span class="btn-icon">🥰</span>',
-      '      <span class="btn-text">Xoa đầu Thư nè</span>',
-      '      <span class="pat-badge" id="fxPatCounter">+1</span>',
-      '    </button>',
       '    <button type="button" class="fx-btn-action fx-btn-next" id="fxBtnNextPhoto">',
       '      <span>Ảnh kế tiếp</span>',
       '      <span class="btn-icon">➡️</span>',
@@ -245,7 +237,6 @@
       '      <span>Đóng 🌸</span>',
       '    </button>',
       '  </div>',
-      '  <div class="fx-pat-toast" id="fxPatToast">🥰 Đã xoa đầu Thư!</div>',
       '</div>'
     ].join('');
 
@@ -263,62 +254,36 @@
       if (e.target === photoModalEl) closePhotoLightbox();
     });
 
-    // Nút tương tác siêu cute: Xoa đầu Thư
-    var patBtn = document.getElementById('fxBtnPatHead');
-    var patCounterEl = document.getElementById('fxPatCounter');
-    var patToastEl = document.getElementById('fxPatToast');
-
-    patBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      patCounter++;
-      patCounterEl.textContent = '+' + patCounter;
-
-      playCrystalChime([880, 1108.73, 1318.51, 1760], 0.06);
-
-      var rect = this.getBoundingClientRect();
-      burstHearts(rect.left + rect.width / 2, rect.top, 20);
-
-      var toastMessages = [
-        "🥰 Đã xoa đầu Thư x" + patCounter + " cái! Đầu tròn cưng xỉu 💖",
-        "✨ Ngoan ngoãn đứng yên cho Trikun xoa đầu hoài nha! 🐾",
-        "🍚 Nhớ ăn nhiều cơm vô cho má phúng phính búng ra sữa nghen! 😋",
-        "🧀 Hôm nào rảnh nhớ rủ tôi đi chơi á, cấm trốn! 🌷",
-        "🌸 20/10 chúc Thư mãi rạng ngời và bình an nhất trần đời! ✨"
-      ];
-      var msg = toastMessages[(patCounter - 1) % toastMessages.length];
-      patToastEl.textContent = msg;
-      patToastEl.classList.remove('is-showing');
-      void patToastEl.offsetWidth;
-      patToastEl.classList.add('is-showing');
-
-      if (patToastTimer) clearTimeout(patToastTimer);
-      patToastTimer = setTimeout(function () {
-        patToastEl.classList.remove('is-showing');
-      }, 3000);
-    });
-
     // Nút chuyển ảnh tiếp theo mượt mà
     document.getElementById('fxBtnNextPhoto').addEventListener('click', function (e) {
       e.stopPropagation();
+      playCrystalChime([880, 1108.73, 1318.51, 1760], 0.05);
       currentStoryIdx = (currentStoryIdx + 1) % PHOTO_STORIES.length;
       renderCurrentStory(true);
     });
 
-    // 3D Parallax Tilt theo di chuyển chuột
+    // 3D Parallax Tilt theo di chuyển chuột (tối ưu 60fps với RAF, không làm giật khung hình)
     var cardWrap = photoModalEl.querySelector('.fx-photo-card-wrap');
+    var tiltRaf = null;
     cardWrap.addEventListener('mousemove', function (e) {
       if (!photoModalCard) return;
-      var rect = photoModalCard.getBoundingClientRect();
-      var x = e.clientX - (rect.left + rect.width / 2);
-      var y = e.clientY - (rect.top + rect.height / 2);
-      var rotY = (x / (rect.width / 2)) * 12;
-      var rotX = -(y / (rect.height / 2)) * 12;
-      photoModalCard.style.transform = 'rotateX(' + rotX.toFixed(2) + 'deg) rotateY(' + rotY.toFixed(2) + 'deg)';
-    });
+      var clientX = e.clientX;
+      var clientY = e.clientY;
+      if (tiltRaf) cancelAnimationFrame(tiltRaf);
+      tiltRaf = requestAnimationFrame(function () {
+        var rect = photoModalCard.getBoundingClientRect();
+        var x = clientX - (rect.left + rect.width / 2);
+        var y = clientY - (rect.top + rect.height / 2);
+        var rotY = (x / (rect.width / 2)) * 8;
+        var rotX = -(y / (rect.height / 2)) * 8;
+        photoModalCard.style.transform = 'perspective(1000px) rotateX(' + rotX.toFixed(2) + 'deg) rotateY(' + rotY.toFixed(2) + 'deg)';
+      });
+    }, { passive: true });
 
     cardWrap.addEventListener('mouseleave', function () {
+      if (tiltRaf) cancelAnimationFrame(tiltRaf);
       if (photoModalCard) {
-        photoModalCard.style.transform = 'rotateX(0deg) rotateY(0deg)';
+        photoModalCard.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
       }
     });
   }
@@ -412,7 +377,7 @@
     });
 
     var particles = [];
-    var MAX_PARTICLES = 120;
+    var MAX_PARTICLES = 80;
     var colors = [
       'rgba(255, 235, 150, ',
       'rgba(255, 182, 193, ',
@@ -421,41 +386,50 @@
       'rgba(186, 230, 253, '
     ];
 
+    var isLoopRunning = false;
+    function startSparkleLoop() {
+      if (!isLoopRunning) {
+        isLoopRunning = true;
+        requestAnimationFrame(render);
+      }
+    }
+
     function addSparkles(x, y, count) {
       for (var i = 0; i < count; i++) {
         if (particles.length >= MAX_PARTICLES) particles.shift();
         var angle = Math.random() * Math.PI * 2;
-        var speed = 0.5 + Math.random() * 3.2;
+        var speed = 0.5 + Math.random() * 2.8;
         particles.push({
           x: x,
           y: y,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed - 0.4,
-          size: 2.5 + Math.random() * 4.5,
+          size: 2.2 + Math.random() * 3.8,
           color: colors[Math.floor(Math.random() * colors.length)],
           alpha: 1,
-          decay: 0.02 + Math.random() * 0.03,
+          decay: 0.024 + Math.random() * 0.032,
           isStar: Math.random() < 0.45,
           rotation: Math.random() * Math.PI,
           rotSpeed: (Math.random() * 0.2 - 0.1)
         });
       }
+      startSparkleLoop();
     }
 
-    // Lắng nghe chuột & cảm ứng
+    // Lắng nghe chuột & cảm ứng (passive listener)
     var lastX = -1, lastY = -1;
     function handlePointer(x, y) {
       if (lastX === -1) {
         lastX = x;
         lastY = y;
-        addSparkles(x, y, 4);
+        addSparkles(x, y, 3);
         return;
       }
       var dx = x - lastX;
       var dy = y - lastY;
       var dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist > 5) {
-        addSparkles(x, y, Math.min(6, Math.floor(dist / 6)));
+      if (dist > 7) {
+        addSparkles(x, y, Math.min(5, Math.floor(dist / 8)));
         lastX = x;
         lastY = y;
       }
@@ -473,7 +447,7 @@
 
     window.addEventListener('click', function (e) {
       // Nổ sao lấp lánh khi click bất kỳ đâu
-      addSparkles(e.clientX, e.clientY, 15);
+      addSparkles(e.clientX, e.clientY, 12);
     }, { passive: true });
 
     // Vẽ sao 4 cánh ma thuật
@@ -497,6 +471,12 @@
     }
 
     function render() {
+      if (particles.length === 0) {
+        ctx.clearRect(0, 0, width, height);
+        isLoopRunning = false;
+        return; // Dừng RAF khi người dùng không di chuột để tiết kiệm pin & 0% CPU
+      }
+
       ctx.clearRect(0, 0, width, height);
 
       for (var i = particles.length - 1; i >= 0; i--) {
@@ -512,9 +492,7 @@
         }
 
         ctx.save();
-        ctx.fillStyle = p.color + p.alpha + ')';
-        ctx.shadowColor = p.color + '0.8)';
-        ctx.shadowBlur = 8;
+        ctx.fillStyle = p.color + Math.max(0, p.alpha) + ')';
 
         if (p.isStar) {
           ctx.translate(p.x, p.y);
@@ -531,10 +509,9 @@
 
       requestAnimationFrame(render);
     }
-    render();
   }
 
-  // --- G. MƯA CÁNH HOA TULIP 3D & ĐOM ĐÓM HOÀNG KIM (CANVAS) ---
+  // --- G. MƯA CÁNH HOA TULIP 3D & ĐOM ĐÓM HOÀNG KIM (TỐI ƯU 60FPS KHÔNG LAG) ---
   function initFallingPetalsAndStardust() {
     var canvas = document.createElement('canvas');
     canvas.id = 'fxPetalCanvas';
@@ -549,16 +526,18 @@
       height = canvas.height = window.innerHeight;
     });
 
+    var isMobile = window.innerWidth < 768;
+
     // 1. Cánh hoa Tulip
     var petals = [];
-    var NUM_PETALS = 28;
+    var NUM_PETALS = isMobile ? 14 : 22;
     for (var i = 0; i < NUM_PETALS; i++) {
       petals.push({
         x: Math.random() * width,
         y: Math.random() * height - height,
-        size: 10 + Math.random() * 14,
-        speedY: 1.1 + Math.random() * 1.6,
-        speedX: Math.random() * 1.2 - 0.6,
+        size: 9 + Math.random() * 13,
+        speedY: 1.0 + Math.random() * 1.4,
+        speedX: Math.random() * 1.0 - 0.5,
         rotX: Math.random() * Math.PI,
         rotY: Math.random() * Math.PI,
         rotZ: Math.random() * Math.PI,
@@ -573,14 +552,14 @@
 
     // 2. Đom đóm hoàng kim (Fireflies / Stardust)
     var fireflies = [];
-    var NUM_FIREFLIES = 35;
+    var NUM_FIREFLIES = isMobile ? 18 : 26;
     for (var f = 0; f < NUM_FIREFLIES; f++) {
       fireflies.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        radius: 1.2 + Math.random() * 2.2,
+        radius: 1.2 + Math.random() * 2.0,
         vx: (Math.random() - 0.5) * 0.5,
-        vy: -0.3 - Math.random() * 0.5,
+        vy: -0.3 - Math.random() * 0.4,
         alpha: Math.random(),
         alphaSpeed: 0.01 + Math.random() * 0.02,
         color: Math.random() < 0.6 ? '#fde047' : '#fef08a'
@@ -588,9 +567,14 @@
     }
 
     function renderWorld() {
+      if (document.hidden) {
+        requestAnimationFrame(renderWorld);
+        return;
+      }
+
       ctx.clearRect(0, 0, width, height);
 
-      // Vẽ đom đóm
+      // Vẽ đom đóm với 2 lớp tròn mềm (nhanh gấp 50x so với shadowBlur)
       for (var f = 0; f < fireflies.length; f++) {
         var ff = fireflies[f];
         ff.x += ff.vx;
@@ -605,18 +589,24 @@
           ff.x = Math.random() * width;
         }
 
-        ctx.save();
+        var a = Math.max(0, Math.min(1, ff.alpha));
+
+        // Quầng sáng mềm
+        ctx.fillStyle = 'rgba(253, 224, 71, ' + (a * 0.28).toFixed(2) + ')';
+        ctx.beginPath();
+        ctx.arc(ff.x, ff.y, ff.radius * 2.4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Tâm đom đóm
         ctx.fillStyle = ff.color;
-        ctx.globalAlpha = Math.max(0, Math.min(1, ff.alpha));
-        ctx.shadowColor = '#fde047';
-        ctx.shadowBlur = 10;
+        ctx.globalAlpha = a;
         ctx.beginPath();
         ctx.arc(ff.x, ff.y, ff.radius, 0, Math.PI * 2);
         ctx.fill();
-        ctx.restore();
+        ctx.globalAlpha = 1;
       }
 
-      // Vẽ cánh hoa Tulip 3D
+      // Vẽ cánh hoa Tulip 3D (mượt mà, nhẹ máy)
       for (var p = 0; p < petals.length; p++) {
         var pt = petals[p];
         pt.swayPhase += 0.025;
@@ -638,8 +628,6 @@
         ctx.scale(Math.cos(pt.rotX), Math.sin(pt.rotY));
         ctx.globalAlpha = pt.alpha;
         ctx.fillStyle = pt.color;
-        ctx.shadowColor = 'rgba(244, 114, 182, 0.5)';
-        ctx.shadowBlur = 6;
 
         // Vẽ hình cánh hoa Tulip hình elip nhọn
         ctx.beginPath();
