@@ -852,7 +852,7 @@
     function launchFlyingPhoto(L, lane, url, now) {
       // Kích thước ngẫu nhiên 80–98% luồng → ảnh to nhỏ xen kẽ tự nhiên
       var w = Math.round(L.photoW * (0.80 + Math.random() * 0.18));
-      var cardH = Math.round(10 + (w - 20) * 1.18 + 42);
+      var cardH = Math.round(10 + (w - 20) * (16 / 9) + 42);
       var h = cardH;
 
       // Góc nghiêng nhẹ nhàng thanh thoát
