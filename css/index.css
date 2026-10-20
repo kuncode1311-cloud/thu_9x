@@ -8,13 +8,30 @@
 
   /* Chiều cao THẬT của vùng nhìn thấy (JS ghi đè bằng window.innerHeight).
      100vh trên iOS/in-app browser cao hơn vùng nhìn thấy → mọi thứ neo đáy bị tụt xuống */
-  :root { --app-h: 100vh; }
-  @supports (height: 100dvh) { :root { --app-h: 100dvh; } }
-  html { height: 100%; }
+  :root {
+    --app-h: 100vh;
+    --app-h: 100dvh;
+  }
+  @supports (height: 100dvh) {
+    :root { --app-h: 100dvh; }
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
 
   /* Đóng băng toàn bộ animation cho đến khi user bấm "Đã hiểu" */
   #contenido-principal {
     transition: opacity 1.35s ease;
+    perspective: 1000px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
   }
   body.not-loaded #contenido-principal .intro,
   body.not-loaded #contenido-principal .flowers,
@@ -606,33 +623,41 @@
     --letter-modal-btn-gradient: linear-gradient(135deg, #ca8a04 0%, #facc15 100%);
   }
 
-  body {
+    body {
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    height: var(--app-h);
-    min-height: var(--app-h);
+    height: 100vh;
+    height: 100dvh;
+    height: var(--app-h, 100dvh);
+    min-height: 100vh;
+    min-height: 100dvh;
+    min-height: var(--app-h, 100dvh);
     width: 100vw;
-    max-width: 100vw;
+    width: 100%;
+    max-width: 100%;
     background-color: var(--dark-color);
     overflow: hidden;
-    perspective: 1000px;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-text-size-adjust: 100%;
   }
 
   /* ============================================================
      🌸 MÀN HÌNH MỞ ĐẦU: RÈM MỜ FROSTED GLASS & NÚT VÂN TAY Ở ĐÁY
      ============================================================ */
-  .intro-curtain-overlay {
+    .intro-curtain-overlay {
     position: fixed;
     inset: 0;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
+    width: 100vw;
     width: 100%;
+    height: 100vh;
+    height: 100dvh;
     height: 100%;
     z-index: 9999;
     display: flex;
@@ -1425,12 +1450,15 @@
     }
   }
 
-  .night {
+    .night {
     position: fixed;
     left: 50%;
     top: 0;
     transform: translateX(-50%);
+    width: 100vw;
     width: 100%;
+    height: 100vh;
+    height: 100dvh;
     height: 100%;
     filter: blur(0.1vmin);
     background: url('../assets/images/bg.jpg') center center / cover no-repeat;

@@ -20,17 +20,28 @@
   <link rel="stylesheet" href="css/super_fx.css">
 
   <script>
-    // Chiều cao thật vùng nhìn thấy → biến CSS --app-h (100vh trên iOS/in-app browser)
+    // Chiều cao thật vùng nhìn thấy → biến CSS --app-h (hỗ trợ hoàn hảo iOS Safari & In-app browsers)
     (function () {
       var root = document.documentElement, last = 0;
       function setAppH() {
-        var h = window.innerHeight;
-        if (h && h !== last) { last = h; root.style.setProperty('--app-h', h + 'px'); }
+        var h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
+        if (h && Math.abs(h - last) > 2) {
+          last = h;
+          root.style.setProperty('--app-h', h + 'px');
+        }
       }
       setAppH();
       window.addEventListener('resize', setAppH);
-      window.addEventListener('orientationchange', function () { setTimeout(setAppH, 250); });
+      window.addEventListener('orientationchange', function () { setTimeout(setAppH, 300); });
       window.addEventListener('pageshow', setAppH);
+      document.addEventListener('DOMContentLoaded', setAppH);
+      window.addEventListener('load', function () {
+        setTimeout(setAppH, 50);
+        setTimeout(setAppH, 350);
+      });
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', setAppH);
+      }
     })();
   </script>
 
